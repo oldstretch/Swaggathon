@@ -1,3 +1,9 @@
+
+# install.packages("knitr", dependencies = TRUE)
+library(knitr)
+
+knitr::stitch('DreamTeam.R')
+
 head(mtcars)
 
 print(head(iris))
@@ -11,3 +17,6 @@ print("Shut up Edwin!")
 model <- svm(vbla0)
 
 cool <- 1
+
+source("test.2.R")
+
