@@ -16,3 +16,5 @@ wecool <- 1000
 
 
 y <- "skr skr skr"
+
+print("I am hungry")
