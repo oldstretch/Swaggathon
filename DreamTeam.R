@@ -13,3 +13,6 @@ model <- svm(vbla0)
 cool <- 1
 
 wecool <- 1000
+
+
+y <- "skr skr skr"
