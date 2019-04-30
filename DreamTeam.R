@@ -11,3 +11,5 @@ print("Shut up Edwin!")
 model <- svm(vbla0)
 
 cool <- 1
+
+wecool <- 1000
