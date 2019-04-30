@@ -9,3 +9,5 @@ print("Where did Felix go??")
 model <- svm(vbla0)
 
 cool <- 1
+
+wecool <- 1000
