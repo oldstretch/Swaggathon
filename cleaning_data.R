@@ -62,6 +62,7 @@ ds.events <- read.csv(paste0(dir.providedData, "ds.urban.events.csv"))
 ##### Clean / Understand Rotterdampas dataset #####
 
 load(paste0(dir.providedData, "rotterdampas.RData"))
+load(paste0("/Users/ulifretzen/Swaggathon/providedData/rotterdampas.RData"))
 ds.rotterdamPas <- Rotterdampas_2017_2018
 
 colnames(ds.rotterdamPas) <- c("id", "passH_nb", "age_category", "passH_postcode", 
@@ -77,6 +78,8 @@ dt.rotterdamPas <- as.data.table(ds.rotterdamPas)
 dt.rotterdamPas <- dt.rotterdamPas[, "activity_within_rotterdam" := ifelse(substr(partner_p4, 1, 2) == 30, 1, 0)]
 dt.rotterdamPas$activity_within_rotterdam <- factor(dt.rotterdamPas$activity_within_rotterdam)
 dt.rotterdamPas <- dt.rotterdamPas[activity_within_rotterdam == 1, ]
+
+dt.rotterdamPas$partner_postcode <- dt.rotterdamPas[, gsub(" ", "", dt.rotterdamPas$partner_postcode)]
 
 # save dataset
 saveRDS(dt.rotterdamPas, file = paste0(dir.providedData, "dt.rotterdamPas.RData"))
@@ -108,6 +111,7 @@ colnames(sportPart.ds) <- c("Neighbourhood",
                             "65-80 years % women",
                             "81+ years % men",
                             "81+ years % women")
+
 
 # Save cleaned data
 write.csv(sportPart.ds,'providedData/cleanSports.csv')
