@@ -16,14 +16,15 @@ library(knitr)
 # setwd("XXX")
 
 # Felix's working directory
-setwd("/Users/felixmeindl/Documents/GitHub/")
+dir <- "/Users/felixmeindl/Documents/GitHub/Swaggathon/"
 
 # Uli's working directory
 # setwd("XXX")
 
-path.providedData <- "/Swaggathon/providedData"
-path.additionalData <- "/Swaggathon/additionalData"
-path.results <- "/Swaggathon/results"
+
+dir.providedData <- paste0(dir, "providedData/")
+dir.additionalData <- paste0(dir, "additionalData/")
+dir.results <- paste0(dir, "results/")
 
 
 # set global seed
@@ -31,8 +32,8 @@ set.seed(1234)
 
 
 # run all hackathon scripts
-source("data_cleaning.R")
+# source("data_cleaning.R")
 
 
 # save script as pdf
-knitr::stitch('main.R')
+# knitr::stitch('main.R')
