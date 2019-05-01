@@ -7,7 +7,7 @@ library(knitr)
 # set working directory (individual per teammember!!!)
 
 # Elena's working directory
-# setwd("XXX")
+dir <- "C:/Users/elena/OneDrive/Desktop/Big Data and Business Analytics/Swaggathon/"
 
 # Edwin's working directory
 # setwd("XXX")
