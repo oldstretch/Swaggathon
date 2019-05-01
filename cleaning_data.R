@@ -94,3 +94,8 @@ colnames(sportPart.ds) <- c("Neighbourhood",
 # Save cleaned data
 write.csv(sportPart.ds,'providedData/cleanSports.csv')
 
+
+##### Import and translate postalcodes_with geoloc #####
+
+ds.postalCodes <- read.csv(paste0(dir.providedData, "Postalcodes_with_GeoLoc.csv"))
+
