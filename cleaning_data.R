@@ -127,22 +127,22 @@ library(stringr)
 
 ds.weather <- read.delim(paste0(dir.providedData, "ds.weather.txt"))
 df.weather <- as.data.frame(ds.weather)
-names(dt.weather) <- c("wt")
+names(df.weather) <- c("wt")
 
-df.weather <- str_split_fixed(dt.weather$wt, ",", 12)
-df.weather <- dt.weather[19:1115, 2:12]
-df.weather <- dt.weather[, c(-3,-5,-6,-8,-10)]
-df.weather <- as.data.frame(dt.weather)
-names(dt.weather) <- c("Date", 
+df.weather <- str_split_fixed(df.weather$wt, ",", 12)
+df.weather <- df.weather[19:1115, 2:12]
+df.weather <- df.weather[, c(-3,-5,-6,-8,-10)]
+df.weather <- as.data.frame(df.weather)
+names(df.weather) <- c("Date", 
                        "Daily Avg. Wind Speed", 
                        "Daily Avg. Temperature", 
                        "Sunshine Duration", 
                        "Prec. Duration",
                        "Highest h. amount prec.")
-df.weather <- dt.weather[3:1097, ]
-df.weather$Date <- as.character(dt.weather$Date)
-df.weather$Date <- sub("([[:digit:]]{4,4})$", "/\\1", dt.weather$Date)
-df.weather$Date <- sub("(.{7})(/*)", "\\1/\\2", dt.weather$Date)
-df.weather$Date <- as.Date(dt.weather$Date)
+df.weather <- df.weather[3:1097, ]
+df.weather$Date <- as.character(df.weather$Date)
+df.weather$Date <- sub("([[:digit:]]{4,4})$", "/\\1", df.weather$Date)
+df.weather$Date <- sub("(.{7})(/*)", "\\1/\\2", df.weather$Date)
+df.weather$Date <- as.Date(df.weather$Date)
 
 saveRDS(df.weather, file = paste0(dir.providedData, "df.weather.RData"))
