@@ -143,7 +143,6 @@ names(df.weather) <- c("Date",
 df.weather <- df.weather[3:1097, ]
 df.weather$Date <- as.character(df.weather$Date)
 df.weather$Date <- sub("([[:digit:]]{4,4})$", "/\\1", df.weather$Date)
-
-#missing slash in the variable data 
-df.weather$Date <- as.Date(df.weather$Date) # ULIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+df.weather$Date <- sub("(.{7})(/*)", "\\1/\\2", df.weather$Date)
+df.weather$Date <- as.Date(df.weather$Date)
 
