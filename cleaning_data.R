@@ -145,4 +145,4 @@ df.weather$Date <- as.character(df.weather$Date)
 df.weather$Date <- sub("([[:digit:]]{4,4})$", "/\\1", df.weather$Date)
 df.weather$Date <- sub("(.{7})(/*)", "\\1/\\2", df.weather$Date)
 df.weather$Date <- as.Date(df.weather$Date)
-
+saveRDS(df.weather, file = paste0(dir.providedData, "df.weather.RData"))
