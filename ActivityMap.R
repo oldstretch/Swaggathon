@@ -83,4 +83,20 @@ save(map.rotterdam.01, file = paste0(dir.results,
 
 # Show the map
 map.Activity.01 <- ggmap(map.rotterdam.01)
+
+# Add the Parking garages information. The plotting of 
+# both colour and shape is redundant in this case, as 
+# these aesthetics contain the same information
+map.Activity.01 + 
+  geom_point(aes(x = location.lng, 
+                 y = location.lat 
+                 # colour = TYPE, 
+                 # shape=TYPE
+                 ), 
+             data = dt.rPas.partner, 
+             size = 5
+             )
+  # scale_color_brewer("Type of garage", palette = "Set1") +
+  # scale_shape_discrete(guide=FALSE)
 map.Activity.01
+ggsave(paste0(dir.results,"map.Activity.01.pdf"))
