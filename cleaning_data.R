@@ -117,3 +117,29 @@ write.csv(sportPart.ds,'providedData/cleanSports.csv')
 
 ds.postalCodes <- read.csv(paste0(dir.providedData, "Postalcodes_with_GeoLoc.csv"))
 
+##### Import and prepare weather data #####
+
+library(stringr)
+
+ds.weather <- read.delim(paste0(dir.additionalData, "ds.weather.txt"))
+df.weather <- as.data.frame(ds.weather)
+
+names(df.weather) <- c("wt")
+
+df.weather <- str_split_fixed(df.weather$wt, ",", 12)
+df.weather <- df.weather[19:1115, 2:12]
+df.weather <- df.weather[, c(-3,-5,-6,-8,-10)]
+df.weather <- as.data.frame(df.weather)
+names(df.weather) <- c("Date", 
+                       "Daily Avg. Wind Speed", 
+                       "Daily Avg. Temperature", 
+                       "Sunshine Duration", 
+                       "Prec. Duration",
+                       "Highest h. amount prec.")
+df.weather <- df.weather[3:1097, ]
+df.weather$Date <- as.character(df.weather$Date)
+df.weather$Date <- sub("([[:digit:]]{4,4})$", "/\\1", df.weather$Date)
+
+#missing slash in the variable data 
+df.weather$Date <- as.Date(df.weather$Date) # ULIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+
