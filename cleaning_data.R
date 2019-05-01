@@ -58,14 +58,19 @@ write.csv(ds.urban.events, file = paste0(dir.providedData, "ds.urban.events.csv"
 
 ##### Clean / Understand Rotterdampas dataset #####
 
-# load(paste0(dir.providedData, "rotterdampas.RData"))
-# 
-# ds.rotterdamPas <- rotterdampas
-# 
-# View(ds.rotterdamPas)
+load(paste0(dir.providedData, "rotterdampas.RData"))
+ds.rotterdamPas <- ds_rotterdamPas
+
+colnames(ds.rotterdamPas) <- c("id", "passH_nb", "age_category", "passH_postcode", 
+                               "passH_p4", "passH_neighborhood", "passH_district", "partner_nb",
+                               "partner_postcode", "partner_p4", "partner_neighborhood", "partner_district",
+                               "activity_nb", "discount", "activity_validity", "inside", 
+                               "nice_weather", "bad_weather", "fun_for_kids", "fun_without_kids", 
+                               "highlight", "use_date", "compensation_incl_tax", "social_group", 
+                               "activity_category", "activity_type", "year")
 
 
-
+# Compensation is what the government pays which the people don't, in order to provide the discount
 ##### Clean sport data: Sportparticipatie_Rotterdam_2015_2017.csv #####
 sportPart.ds <- read_csv("providedData/Sportparticipatie_Rotterdam_2015_2017.csv")
 
