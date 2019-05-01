@@ -19,9 +19,6 @@ colnames(ds.urban.events) <- c("id",
                                "nr_visitors",
                                "year")
 
-
-View(ds.urban.events)
-
 write.csv(ds.urban.events, file = paste0(dir.providedData, "ds.urban.events.csv"), row.names = FALSE)
 
 
@@ -32,3 +29,34 @@ write.csv(ds.urban.events, file = paste0(dir.providedData, "ds.urban.events.csv"
 # ds.rotterdamPas <- rotterdampas
 # 
 # View(ds.rotterdamPas)
+
+
+
+##### Clean sport data: Sportparticipatie_Rotterdam_2015_2017.csv #####
+sportPart.ds <- read_csv("providedData/Sportparticipatie_Rotterdam_2015_2017.csv")
+
+sportPart.ds <- sportPart.ds[, 2:ncol(sportPart.ds)]
+
+colnames(sportPart.ds) <- c("Neighbourhood",
+                            "Postcode",
+                            "Year",
+                            "Total %",
+                            "4-11 years %",
+                            "12-17 years %",
+                            "18-64 years %",
+                            "65-80 years %",
+                            "81+ years %",
+                            "4-11 years % men",
+                            "4-11 years % women",
+                            "12-17 years % men",
+                            "12-17 years % women",
+                            "18-64 years % men",
+                            "18-64 years % women",
+                            "65-80 years % men",
+                            "65-80 years % women",
+                            "81+ years % men",
+                            "81+ years % women")
+
+# Save cleaned data
+write.csv(sportPart.ds,'providedData/cleanSports.csv')
+
