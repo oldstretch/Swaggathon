@@ -62,6 +62,7 @@ ds.events <- read.csv(paste0(dir.providedData, "ds.urban.events.csv"))
 ##### Clean / Understand Rotterdampas dataset #####
 
 load(paste0(dir.providedData, "rotterdampas.RData"))
+load(paste0("/Users/ulifretzen/Swaggathon/providedData/rotterdampas.RData"))
 ds.rotterdamPas <- Rotterdampas_2017_2018
 
 colnames(ds.rotterdamPas) <- c("id", "passH_nb", "age_category", "passH_postcode", 
@@ -77,6 +78,8 @@ dt.rotterdamPas <- as.data.table(ds.rotterdamPas)
 dt.rotterdamPas <- dt.rotterdamPas[, "activity_within_rotterdam" := ifelse(substr(partner_p4, 1, 2) == 30, 1, 0)]
 dt.rotterdamPas$activity_within_rotterdam <- factor(dt.rotterdamPas$activity_within_rotterdam)
 dt.rotterdamPas <- dt.rotterdamPas[activity_within_rotterdam == 1, ]
+
+dt.rotterdamPas$partner_postcode <- dt.rotterdamPas[, gsub(" ", "", dt.rotterdamPas$partner_postcode)]
 
 # save dataset
 saveRDS(dt.rotterdamPas, file = paste0(dir.providedData, "dt.rotterdamPas.RData"))
@@ -109,6 +112,7 @@ colnames(sportPart.ds) <- c("Neighbourhood",
                             "81+ years % men",
                             "81+ years % women")
 
+
 # Save cleaned data
 write.csv(sportPart.ds,'providedData/cleanSports.csv')
 
@@ -117,3 +121,28 @@ write.csv(sportPart.ds,'providedData/cleanSports.csv')
 
 ds.postalCodes <- read.csv(paste0(dir.providedData, "Postalcodes_with_GeoLoc.csv"))
 
+##### Import and prepare weather data #####
+
+library(stringr)
+
+ds.weather <- read.delim(paste0(dir.providedData, "ds.weather.txt"))
+df.weather <- as.data.frame(ds.weather)
+names(dt.weather) <- c("wt")
+
+df.weather <- str_split_fixed(dt.weather$wt, ",", 12)
+df.weather <- dt.weather[19:1115, 2:12]
+df.weather <- dt.weather[, c(-3,-5,-6,-8,-10)]
+df.weather <- as.data.frame(dt.weather)
+names(dt.weather) <- c("Date", 
+                       "Daily Avg. Wind Speed", 
+                       "Daily Avg. Temperature", 
+                       "Sunshine Duration", 
+                       "Prec. Duration",
+                       "Highest h. amount prec.")
+df.weather <- dt.weather[3:1097, ]
+df.weather$Date <- as.character(dt.weather$Date)
+df.weather$Date <- sub("([[:digit:]]{4,4})$", "/\\1", dt.weather$Date)
+df.weather$Date <- sub("(.{7})(/*)", "\\1/\\2", dt.weather$Date)
+df.weather$Date <- as.Date(dt.weather$Date)
+
+saveRDS(df.weather, file = paste0(dir.providedData, "df.weather.RData"))
