@@ -7,7 +7,7 @@ library(knitr)
 # set working directory (individual per teammember!!!)
 
 # Elena's working directory
-# setwd("XXX")
+setwd("C:/Users/elena/OneDrive/Desktop/Big Data and Business Analytics/Swaggathon/providedData")
 
 # Edwin's working directory
 # setwd("XXX")
@@ -36,3 +36,27 @@ source("data_cleaning.R")
 
 # save script as pdf
 knitr::stitch('main.R')
+
+
+dt.weather <- read.delim("ds.weather.txt")
+dt.weather <- as.data.frame(dt.weather)
+library(stringr)
+names(dt.weather) <- c("wt")
+
+dt.weather <- str_split_fixed(dt.weather$wt, ",", 12)
+dt.weather <- dt.weather[19:1115, 2:12]
+dt.weather <- dt.weather[, c(-3,-5,-6,-8,-10)]
+dt.weather <- as.data.frame(dt.weather)
+names(dt.weather) <- c("Date", 
+                       "Daily Avg. Wind Speed", 
+                       "Daily Avg. Temperature", 
+                       "Sunshine Duration", 
+                       "Prec. Duration",
+                       "Highest h. amount prec.")
+dt.weather <- dt.weather[3:1097, ]
+dt.weather$Date <- as.character(dt.weather$Date)
+dt.weather$Date <- sub("([[:digit:]]{4,4})$", "/\\1", dt.weather$Date)
+
+dt.weather$Date <- as.Date(dt.weather$Date)
+
+
