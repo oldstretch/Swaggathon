@@ -2,6 +2,7 @@
 
 library(readr)
 library(lubridate)
+library(data.table)
 
 Visit_Frequencies_Q1_2017 <- read_delim("providedData/Visit Frequencies Q1 2017.csv",
                                         ";", escape_double = FALSE, 
@@ -59,7 +60,7 @@ write.csv(ds.urban.events, file = paste0(dir.providedData, "ds.urban.events.csv"
 ##### Clean / Understand Rotterdampas dataset #####
 
 load(paste0(dir.providedData, "rotterdampas.RData"))
-ds.rotterdamPas <- ds_rotterdamPas
+ds.rotterdamPas <- Rotterdampas_2017_2018
 
 colnames(ds.rotterdamPas) <- c("id", "passH_nb", "age_category", "passH_postcode", 
                                "passH_p4", "passH_neighborhood", "passH_district", "partner_nb",
@@ -68,6 +69,19 @@ colnames(ds.rotterdamPas) <- c("id", "passH_nb", "age_category", "passH_postcode
                                "nice_weather", "bad_weather", "fun_for_kids", "fun_without_kids", 
                                "highlight", "use_date", "compensation_incl_tax", "social_group", 
                                "activity_category", "activity_type", "year")
+
+# limit rotterdamPas dataset to activities with partners that are located within rotterdam (based on 30XX postcode)
+dt.rotterdamPas <- as.data.table(ds.rotterdamPas)
+dt.rotterdamPas <- dt.rotterdamPas[, "activity_within_rotterdam" := ifelse(substr(partner_p4, 1, 2) == "30", 1, 0)]
+dt.rotterdamPas$activity_within_rotterdam <- factor(dt.rotterdamPas$activity_within_rotterdam)
+
+# save dataset
+saveRDS(ds.rotterdamPas, file = paste0(dir.providedData, "ds.rotterdamPas.RData"))
+
+dt.rotterdamPas.lim30 <- dt.rotterdamPas[activity_within_rotterdam == 1, ]
+
+# save dataset
+saveRDS(dt.rotterdamPas.lim30, file = paste0(dir.providedData, "dt.rotterdamPas.lim30.RData"))
 
 
 # Compensation is what the government pays which the people don't, in order to provide the discount
