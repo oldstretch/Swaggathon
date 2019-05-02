@@ -61,8 +61,8 @@ ds.events <- read.csv(paste0(dir.providedData, "ds.urban.events.csv"))
 
 ##### Clean / Understand Rotterdampas dataset #####
 
-load(paste0(dir.providedData, "rotterdampas.RData"))
-load(paste0("/Users/ulifretzen/Swaggathon/providedData/rotterdampas.RData"))
+load("./providedData/rotterdampas.RData")
+#load(paste0("/Users/ulifretzen/Swaggathon/providedData/rotterdampas.RData"))
 ds.rotterdamPas <- Rotterdampas_2017_2018
 
 colnames(ds.rotterdamPas) <- c("id", "passH_nb", "age_category", "passH_postcode", 
@@ -82,7 +82,7 @@ dt.rotterdamPas <- dt.rotterdamPas[activity_within_rotterdam == 1, ]
 dt.rotterdamPas$partner_postcode <- dt.rotterdamPas[, gsub(" ", "", dt.rotterdamPas$partner_postcode)]
 
 # save dataset
-saveRDS(dt.rotterdamPas, file = paste0(dir.providedData, "dt.rotterdamPas.RData"))
+saveRDS(dt.rotterdamPas, file = "./providedData/dt.rotterdamPas.RData")
 
 
 
