@@ -26,7 +26,7 @@ library(gganimate)
 
 # load rotterdam pas data
 ds.rPas.activity.month <- readRDS(paste0(dir.providedData, 
-                                       "dt.rotterdamPas.RData"))
+                                         "dt.rotterdamPas.RData"))
 dt.rPas.activity.month <- as.data.table(ds.rPas.activity.month)
 
 dt.rPas.activity.month <- dt.rPas.activity.month[, month_of_year := months(dt.rPas.activity.month$use_date)]
@@ -39,6 +39,7 @@ dt.rPas.activity.month <- dt.rPas.activity.month[order(dt.rPas.activity.month$pa
 
 df.rPas.activity.month <- as.data.frame(dt.rPas.activity.month)
 
+
 # load and prepare geo tag dataset
 ds.zipcodes.geoloc <- read.csv(paste0(dir.providedData, 
                                       "Postalcodes_with_GeoLoc.csv"))
@@ -47,18 +48,24 @@ colnames(dt.zipcodes.geoloc)[2] <- "partner_postcode"
 
 #merge the two datasets
 df.rPas.activity.month <- merge(df.rPas.activity.month, 
-                              dt.zipcodes.geoloc, 
-                              by = "partner_postcode", 
-                              all.x = TRUE)
+                                dt.zipcodes.geoloc, 
+                                by = "partner_postcode", 
+                                all.x = TRUE)
 
 # Deleting duplicates
 df.rPas.activity.month <- df.rPas.activity.month[!duplicated(df.rPas.activity.month[c("activity_nb", 
-                                                                                "month_of_year")]), ]
-
+                                                                                      "month_of_year")]), ]
 # Selectiung relevant columns for further analysis / map
-df.rPas.activity.month <- df.rPas.activity.month[, c(2, 13, 29, 30, 33, 34)]
+df.rPas.activity.month <- df.rPas.activity.month[, c(2, 13, 30, 31, 34, 35)]
 
 dt.rPas.activity.month <- as.data.table(df.rPas.activity.month)
+
+dt.rPas.activity.month <- dt.rPas.activity.month[!is.na(location.lat), ]
+
+dt.rPas.activity.month$month_of_year <- factor(dt.rPas.activity.month$month_of_year, 
+                                               levels = c("Januar", "Februar", "März", "April", "Mai", 
+                                                          "Juni", "Juli", "August", "September", 
+                                                          "Oktober", "November", "Dezember"))
 
 
 ##### Defining underlining map of Rotterdam #####
@@ -89,7 +96,7 @@ map.activity.months <- ggmap(map.rotterdam.03)
 map.activity.months
 
 # Add the activity information from the RotterdamPas dataset for 2017
-map.activity.months + 
+map.activity.days.animated <- map.activity.months + 
   geom_point(aes(x = location.lng, 
                  y = location.lat,
                  colour = cut(freq_per_month, 
@@ -102,16 +109,18 @@ map.activity.months +
              alpha = 0.20
   ) + 
   scale_colour_brewer(palette = "YlOrRd") +
-  ggtitle(label = "Activities Used by RotterdamPas Owners per Month") +
   xlab(label = "Longitude") + 
   ylab(label = "Latitude") + 
   labs(colour = "Number of Users")
 
-map.activity.months + 
-  transition_states(dt.rPas.activity.month&month_of_year, 
-                    transition_length = 1, 
-                    state_length = 8) + 
-  labs(title = "{closest_state}")
+map.activity.days.animated
 
+map.activity.days.animated + 
+  transition_states(dt.rPas.activity.month$month_of_year, 
+                    transition_length = 10, 
+                    state_length = 25) + 
+  labs(title = "Activities Used by RotterdamPas Owners per Month", 
+       subtitle = "{closest_state}")
 
-ggsave(paste0(dir.results,"map.activity.months.pdf"))
+# Save animated map
+anim_save(paste0(dir.results, "map.activity.months.animated.mp4"))
