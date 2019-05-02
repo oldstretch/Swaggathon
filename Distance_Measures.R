@@ -20,6 +20,9 @@ dt.rotterdamPas <- dt.rotterdamPas[-1366789, ]
 post.code.red6 <- post.code.red[nchar(as.character(post.code.red$postalcode)) == 6, ]
 post.code.red6 <- post.code.red6[!is.na(post.code.red6$location.lat), ]
 
+
+which(dt.rotterdamPas$partner_postcode %in% post.code.red6$postalcode)
+
 dt.pas.and.locs <- merge(dt.rotterdamPas, 
                          post.code.red, 
                          by.x = "passH_postcode", 
@@ -28,6 +31,10 @@ dt.pas.and.locs <- merge(dt.rotterdamPas,
                          all.y = FALSE)
 colnames(dt.pas.and.locs)[29:30] <- c("lat.passH", "lng.passH")
 
+which(dt.rotterdamPas$partner_postcode %in% dt.pas.and.locs$passH_postcode)
+
+length(which(dt.pas.and.locs$partner_postcode %in% post.code.red$postalcode))
+
 dt.pas.and.locs <- merge(dt.pas.and.locs, 
                          post.code.red, 
                          by.x = "partner_postcode", 
@@ -35,6 +42,11 @@ dt.pas.and.locs <- merge(dt.pas.and.locs,
                          all.x = TRUE,
                          all.y = FALSE)
 colnames(dt.pas.and.locs)[31:32] <- c("lat.partner", "lng.partner")
+
+post.code.red$postalcode
+
+sum(!(is.na(dt.pas.and.locs2$location.lat)))
+
 
 if(is.na(dt.pas.and.locs$lat.partner)) {
   dt.pas.and.locs$partner_postcode <- post.code.red6[
@@ -73,6 +85,104 @@ colSums(is.na(dt.pas.and.locs))
 dt.pas.and.locs <- dt.pas.and.locs[!is.na(dt.pas.and.locs$lng.passH), ]
 
 #######
+
+################### put pas and locs back in
+
+library(geosphere)
+
+nrow(dt.pas.and.locs)
+summary.dist <- data.frame(distance = rep(NA, nrow(dt.pas.and.locs)))
+summary.dist$loc.comb <- paste(dt.pas.and.locs$passH_postcode, 
+                               dt.pas.and.locs$partner_postcode, sep = "")
+
+v.combination <- c(rep(NA, length(unique(summary.dist$loc.comb))))
+dt.post.code.combo.unique <- as.data.frame(v.combination)
+colnames(dt.post.code.combo.unique) <- "combination"
+dt.post.code.combo.unique$combination <- unique(summary.dist$loc.comb)
+
+for (i in 1:nrow(dt.post.code.combo.unique)) {
+  if (grepl("[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]+",
+            dt.post.code.combo.unique$combination[i])){
+    dt.post.code.combo.unique$passH_postcode[i] <- 
+      substr(dt.post.code.combo.unique$combination[i], 1, 4)
+    dt.post.code.combo.unique$partner_postcode[i] <- 
+      substr(dt.post.code.combo.unique$combination[i], 5, 8)
+    print(i)
+  }
+  if (grepl("[0-9][0-9][0-9][0-9][A-Z][A-Z][0-9][0-9][0-9][0-9]+",
+            dt.post.code.combo.unique$combination[i])){
+    dt.post.code.combo.unique$passH_postcode[i] <- 
+      substr(dt.post.code.combo.unique$combination[i], 1, 6)
+    dt.post.code.combo.unique$partner_postcode[i] <- 
+      substr(dt.post.code.combo.unique$combination[i], 7, 10)
+    print(i)
+  }
+  if (grepl("[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][A-Z][A-Z]+",
+            dt.post.code.combo.unique$combination[i])){
+    dt.post.code.combo.unique$passH_postcode[i] <- 
+      substr(dt.post.code.combo.unique$combination[i], 1, 4)
+    dt.post.code.combo.unique$partner_postcode[i] <- 
+      substr(dt.post.code.combo.unique$combination[i], 5, 10)
+  }
+  if (grepl("[0-9][0-9][0-9][0-9][A-Z][A-Z][0-9][0-9][0-9][0-9][A-Z][A-Z]+", 
+            dt.post.code.combo.unique$combination[i])){
+    dt.post.code.combo.unique$passH_postcode[i] <- 
+      substr(dt.post.code.combo.unique$combination[i], 1, 6)
+    dt.post.code.combo.unique$partner_postcode[i] <- 
+      substr(dt.post.code.combo.unique$combination[i], 7, 12)
+  }
+}
+
+
+dt.post.code.combo.unique <- merge(dt.post.code.combo.unique,
+                                   post.code.red,
+                                   by.x = "passH_postcode",
+                                   by.y = "postalcode",
+                                   all.x = TRUE)
+colnames(dt.post.code.combo.unique)[4:5] <- c("lat.passH", "lng.passH")
+
+
+dt.post.code.combo.unique <- merge(dt.post.code.combo.unique, 
+                                   post.code.red, 
+                                   by.x = "partner_postcode", 
+                                   by.y = "postalcode",
+                                   all.x = TRUE,
+                                   all.y = FALSE)
+colnames(dt.post.code.combo.unique)[6:7] <- c("lat.partner", "lng.partner")
+
+
+for (i in 1:nrow(dt.post.code.combo.unique)) { 
+  dt.post.code.combo.unique$distance[i] <- distm(c(dt.post.code.combo.unique$lng.passH[i], 
+                                                   dt.post.code.combo.unique$lat.passH[i]), 
+                                                 c(dt.post.code.combo.unique$lng.partner[i],
+                                                   dt.post.code.combo.unique$lat.partner[i]), 
+                                                 fun = distHaversine)
+}
+
+dt.post.code.combo.unique.distance <- dt.post.code.combo.unique[, c("combination", "distance")]
+
+dt.pas.and.locs <- merge(dt.pas.and.locs, 
+                         dt.post.code.combo.unique.distance,
+                         by.x = "loc.comb",
+                         by.y = "combination",
+                         all.x = TRUE)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###################
+
 
 library(geosphere)
   
@@ -142,13 +252,33 @@ dt.post.code.combo.unique$distance[i] <- distm(c(dt.post.code.combo.unique$lng.p
                                             fun = distHaversine)
 }
 
+dt.post.code.combo.unique.distance <- dt.post.code.combo.unique[, c("combination", "distance")]
+
 dt.pas.and.locs <- merge(dt.pas.and.locs, 
-                         dt.post.code.combo.unique,
+                         dt.post.code.combo.unique.distance,
                          by.x = "loc.comb",
                          by.y = "combination",
                          all.x = TRUE)
 
 
+##############
 
+library(ggplot2)
+ggplot(data = dt.pas.and.locs, aes(x = dt.pas.and.locs$distance.y)) + 
+  geom_histogram(breaks=seq(0, 30000, by=500), 
+                 col="blue", 
+                 fill="green"
+                 ) + 
+  labs(title="Travel distance distribution", x="meters", y="Count")
+ggsave("/Users/ulifretzen/Swaggathon/results/Travel_distance_distribution.png")
+  
+save
 
+dt.pas.and.locs$
 
+dt.pas.and.locs <- data.table(dt.pas.and.locs)
+dt.dist.weather <- dt.pas.and.locs[, .(passH_postcode, partner_postcode, use_date,
+                                       nice_weather, bad_weather, distance.y)]
+
+ds.weather <- read.delim2("/Users/ulifretzen/Swaggathon/providedData/ds.weather.txt", header = TRUE, sep = "\t", dec = ",")
+ds.weather[1,]
