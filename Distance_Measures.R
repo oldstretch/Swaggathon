@@ -4,73 +4,73 @@ install.packages("geosphere")
 library(geosphere)
 
 ########
-dt.rotterdamPas <- readRDS(paste0("/Users/ulifretzen/Swaggathon/providedData/dt.rotterdamPas.RData"))
-
-post.code <- read.csv(paste0("/Users/ulifretzen/Swaggathon/providedData/Postalcodes_with_GeoLoc.csv"))
-
-post.code.red <- post.code[, c("postalcode", "location.lat", "location.lng")]
-post.code.red <- post.code.red[unique(post.code.red$postalcode), ]
-
-dt.rotterdamPas <- dt.rotterdamPas[!is.na(dt.rotterdamPas$partner_neighborhood), ]
-dt.rotterdamPas <- dt.rotterdamPas[!is.na(dt.rotterdamPas$passH_postcode), ]
-
-post.code.red <- post.code.red[-5015, ]
-dt.rotterdamPas <- dt.rotterdamPas[-1366789, ]
-
-post.code.red6 <- post.code.red[nchar(as.character(post.code.red$postalcode)) == 6, ]
-post.code.red6 <- post.code.red6[!is.na(post.code.red6$location.lat), ]
-
-dt.pas.and.locs <- merge(dt.rotterdamPas, 
-                         post.code.red, 
-                         by.x = "passH_postcode", 
-                         by.y = "postalcode",
-                         all.x = TRUE,
-                         all.y = FALSE)
-colnames(dt.pas.and.locs)[29:30] <- c("lat.passH", "lng.passH")
-
-dt.pas.and.locs <- merge(dt.pas.and.locs, 
-                         post.code.red, 
-                         by.x = "partner_postcode", 
-                         by.y = "postalcode",
-                         all.x = TRUE,
-                         all.y = FALSE)
-colnames(dt.pas.and.locs)[31:32] <- c("lat.partner", "lng.partner")
-
-if(is.na(dt.pas.and.locs$lat.partner)) {
-  dt.pas.and.locs$partner_postcode <- post.code.red6[
-    min(which(substr(post.code.red6$postalcode, 1, 4) == 
-            substr(dt.pas.and.locs$partner_postcode, 1, 4))), ]$postalcode
-}
-
-if(is.na(dt.pas.and.locs$lat.passH)) {
-  dt.pas.and.locs$passH_postcode <- post.code.red6[
-    min(which(substr(post.code.red6$postalcode, 1, 4) == 
-                substr(dt.pas.and.locs$passH_postcode, 1, 4))), ]$postalcode
-}
-
-dt.pas.and.locs$lat.passH <- NULL
-dt.pas.and.locs$lng.passH <- NULL
-dt.pas.and.locs$lat.partner <- NULL
-dt.pas.and.locs$lng.partner <- NULL
-
-dt.pas.and.locs <- merge(dt.pas.and.locs, 
-                         post.code.red, 
-                         by.x = "passH_postcode", 
-                         by.y = "postalcode",
-                         all.x = TRUE,
-                         all.y = FALSE)
-colnames(dt.pas.and.locs)[29:30] <- c("lat.passH", "lng.passH")
-
-dt.pas.and.locs <- merge(dt.pas.and.locs, 
-                         post.code.red, 
-                         by.x = "partner_postcode", 
-                         by.y = "postalcode",
-                         all.x = TRUE,
-                         all.y = FALSE)
-colnames(dt.pas.and.locs)[31:32] <- c("lat.partner", "lng.partner")
-colSums(is.na(dt.pas.and.locs))
-
-dt.pas.and.locs <- dt.pas.and.locs[!is.na(dt.pas.and.locs$lng.passH), ]
+# dt.rotterdamPas <- readRDS(paste0("/Users/ulifretzen/Swaggathon/providedData/dt.rotterdamPas.RData"))
+# 
+# post.code <- read.csv(paste0("/Users/ulifretzen/Swaggathon/providedData/Postalcodes_with_GeoLoc.csv"))
+# 
+# post.code.red <- post.code[, c("postalcode", "location.lat", "location.lng")]
+# post.code.red <- post.code.red[unique(post.code.red$postalcode), ]
+# 
+# dt.rotterdamPas <- dt.rotterdamPas[!is.na(dt.rotterdamPas$partner_neighborhood), ]
+# dt.rotterdamPas <- dt.rotterdamPas[!is.na(dt.rotterdamPas$passH_postcode), ]
+# 
+# post.code.red <- post.code.red[-5015, ]
+# dt.rotterdamPas <- dt.rotterdamPas[-1366789, ]
+# 
+# post.code.red6 <- post.code.red[nchar(as.character(post.code.red$postalcode)) == 6, ]
+# post.code.red6 <- post.code.red6[!is.na(post.code.red6$location.lat), ]
+# 
+# dt.pas.and.locs <- merge(dt.rotterdamPas, 
+#                          post.code.red, 
+#                          by.x = "passH_postcode", 
+#                          by.y = "postalcode",
+#                          all.x = TRUE,
+#                          all.y = FALSE)
+# colnames(dt.pas.and.locs)[29:30] <- c("lat.passH", "lng.passH")
+# 
+# dt.pas.and.locs <- merge(dt.pas.and.locs, 
+#                          post.code.red, 
+#                          by.x = "partner_postcode", 
+#                          by.y = "postalcode",
+#                          all.x = TRUE,
+#                          all.y = FALSE)
+# colnames(dt.pas.and.locs)[31:32] <- c("lat.partner", "lng.partner")
+# 
+# if(is.na(dt.pas.and.locs$lat.partner)) {
+#   dt.pas.and.locs$partner_postcode <- post.code.red6[
+#     min(which(substr(post.code.red6$postalcode, 1, 4) == 
+#             substr(dt.pas.and.locs$partner_postcode, 1, 4))), ]$postalcode
+# }
+# 
+# if(is.na(dt.pas.and.locs$lat.passH)) {
+#   dt.pas.and.locs$passH_postcode <- post.code.red6[
+#     min(which(substr(post.code.red6$postalcode, 1, 4) == 
+#                 substr(dt.pas.and.locs$passH_postcode, 1, 4))), ]$postalcode
+# }
+# 
+# dt.pas.and.locs$lat.passH <- NULL
+# dt.pas.and.locs$lng.passH <- NULL
+# dt.pas.and.locs$lat.partner <- NULL
+# dt.pas.and.locs$lng.partner <- NULL
+# 
+# dt.pas.and.locs <- merge(dt.pas.and.locs, 
+#                          post.code.red, 
+#                          by.x = "passH_postcode", 
+#                          by.y = "postalcode",
+#                          all.x = TRUE,
+#                          all.y = FALSE)
+# colnames(dt.pas.and.locs)[29:30] <- c("lat.passH", "lng.passH")
+# 
+# dt.pas.and.locs <- merge(dt.pas.and.locs, 
+#                          post.code.red, 
+#                          by.x = "partner_postcode", 
+#                          by.y = "postalcode",
+#                          all.x = TRUE,
+#                          all.y = FALSE)
+# colnames(dt.pas.and.locs)[31:32] <- c("lat.partner", "lng.partner")
+# colSums(is.na(dt.pas.and.locs))
+# 
+# dt.pas.and.locs <- dt.pas.and.locs[!is.na(dt.pas.and.locs$lng.passH), ]
 
 #######
 
