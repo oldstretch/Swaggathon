@@ -4,22 +4,14 @@
 library(knitr)
 
 
-# set working directory (individual per teammember!!!)
+# set working directory 
 
-# Elena's working directory
-dir <- "C:/Users/elena/OneDrive/Desktop/Big Data and Business Analytics/Swaggathon/"
+# # Elena's working directory
+# dir <- "C:/Users/elena/OneDrive/Desktop/Big Data and Business Analytics/Swaggathon/"
 
-# Edwin's working directory
-# setwd("XXX")
-
-# Lisa's working directory
-# setwd("XXX")
 
 # Felix's working directory
 dir <- "/Users/felixmeindl/Documents/GitHub/Swaggathon/"
-
-# Uli's working directory
-# setwd("XXX")
 
 
 dir.providedData <- paste0(dir, "providedData/")
@@ -31,9 +23,6 @@ dir.results <- paste0(dir, "results/")
 set.seed(1234)
 
 
-# run all hackathon scripts
-# source("data_cleaning.R")
-
 
 # save script as pdf
-# knitr::stitch('main.R')
+knitr::stitch('main.R')

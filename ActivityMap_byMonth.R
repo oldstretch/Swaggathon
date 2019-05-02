@@ -96,7 +96,7 @@ map.activity.months <- ggmap(map.rotterdam.03)
 map.activity.months
 
 # Add the activity information from the RotterdamPas dataset for 2017
-map.activity.days.animated <- map.activity.months + 
+map.activity.months.animated <- map.activity.months + 
   geom_point(aes(x = location.lng, 
                  y = location.lat,
                  colour = cut(freq_per_month, 
@@ -113,9 +113,9 @@ map.activity.days.animated <- map.activity.months +
   ylab(label = "Latitude") + 
   labs(colour = "Number of Users")
 
-map.activity.days.animated
+map.activity.months.animated
 
-map.activity.days.animated + 
+map.activity.months.animated + 
   transition_states(dt.rPas.activity.month$month_of_year, 
                     transition_length = 10, 
                     state_length = 25) + 
@@ -123,4 +123,7 @@ map.activity.days.animated +
        subtitle = "{closest_state}")
 
 # Save animated map
-anim_save(paste0(dir.results, "map.activity.months.animated.mp4"))
+# anim_save(paste0(dir.results, "map.activity.months.animated.mp4"))
+
+# save script as pdf
+knitr::stitch('ActivityMap_byMonth.R')

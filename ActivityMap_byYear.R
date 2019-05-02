@@ -101,7 +101,7 @@ map.Activity.2017 +
   labs(colour = "Number of Users")
 
 
-ggsave(paste0(dir.results,"map.Activity.2017.pdf"))
+# ggsave(paste0(dir.results,"map.Activity.2017.pdf"))
 
 
 # Add the activity information from the RotterdamPas dataset for 2018
@@ -127,6 +127,8 @@ map.Activity.2018 +
   ylab(label = "Latitude") + 
   labs(colour = "Number of Users")
 
-ggsave(paste0(dir.results,"map.Activity.2018.pdf"))
+# ggsave(paste0(dir.results,"map.Activity.2018.pdf"))
 
 
+# save script as pdf
+knitr::stitch('ActivityMap_byDay.R')

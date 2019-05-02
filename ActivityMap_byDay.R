@@ -128,4 +128,7 @@ map.activity.days.animated +
        subtitle = "{closest_state}")
   
 
-anim_save(paste0(dir.results, "map.activity.days.animated.mp4"))
+# anim_save(paste0(dir.results, "map.activity.days.animated.mp4"))
+
+# save script as pdf
+knitr::stitch('ActivityMap_byDay.R')
