@@ -1,0 +1,234 @@
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage[sc]{mathpazo}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=true,bookmarksopen=true,bookmarksopenlevel=2,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
+ {hyperref}
+\hypersetup{
+ pdfstartview={XYZ null null 1}}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\topfraction}{0.8}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\floatpagefraction}{0.75}
+
+\makeatother
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+
+
+\title{\title{}}
+
+
+
+\maketitle
+The results below are generated from an R script.
+
+##### City Center Visits Database #####library(readr)library(lubridate)library(data.table)Visit_Frequencies_Q1_2017 <- read_delim("providedData/Visit Frequencies Q1 2017.csv",
+                                        ";", escape_double = FALSE, 
+                                        col_types = cols(Average_Time = col_time(format = "%H:%M:%S")),
+                                        trim_ws = TRUE)Visit_Frequencies_Q2_2017 <- read_delim("providedData/Visit Frequencies Q2 2017.csv",
+                                        ";", escape_double = FALSE, 
+                                        col_types = cols(Average_Time = col_time(format = "%H:%M:%S")),
+                                        trim_ws = TRUE)Visit_Frequencies_Q3_2017 <- read_delim("providedData/Visit Frequencies Q3 2017.csv",
+                                        ";", escape_double = FALSE, 
+                                        col_types = cols(Average_Time = col_time(format = "%H:%M:%S")),
+                                        trim_ws = TRUE)Visit_Frequencies_Q4_2016 <- read_delim("providedData/Visit Frequencies Q4 2016.csv",
+                                        ";", escape_double = FALSE, 
+                                        col_types = cols(Average_Time = col_time(format = "%H:%M:%S")),
+                                        trim_ws = TRUE)Visit_Times_Q1_2017 <- read_delim("providedData/Visit Times Q1 2017.csv",
+                                  ";", escape_double = FALSE, 
+                                  trim_ws = TRUE)## Parsed with column specification:
+## cols(
+##   .default = col_time(),
+##   Minutes = col_character(),
+##   Hours = col_character(),
+##   Percentage_Visits = col_character(),
+##   N_Visits = col_character()
+## )
+## See spec(...) for full column specifications.
+Visit_Times_Q2_2017 <- read_delim("providedData/Visit Times Q2 2017.csv",
+                                  ";", escape_double = FALSE, 
+                                  trim_ws = TRUE)## Parsed with column specification:
+## cols(
+##   .default = col_time(),
+##   Minutes = col_character(),
+##   Hours = col_character(),
+##   Percentage_Visits = col_character(),
+##   N_Visits = col_character()
+## )
+## See spec(...) for full column specifications.
+Visit_Times_Q3_2017 <- read_delim("providedData/Visit Times Q3 2017.csv",
+                                  ";", escape_double = FALSE, 
+                                  trim_ws = TRUE)## Parsed with column specification:
+## cols(
+##   .default = col_time(),
+##   Minutes = col_character(),
+##   Hours = col_character(),
+##   Percentage_Visits = col_character(),
+##   N_Visits = col_character()
+## )
+## See spec(...) for full column specifications.
+Visit_Times_Q4_2016 <- read_delim("providedData/Visit Times Q4 2016.csv",
+                                  ";", escape_double = FALSE, 
+                                  trim_ws = TRUE)## Parsed with column specification:
+## cols(
+##   .default = col_time(),
+##   Minutes = col_character(),
+##   Hours = col_character(),
+##   Percentage_Visits = col_character(),
+##   N_Visits = col_character()
+## )
+## See spec(...) for full column specifications.
+##### Clean / Understand Stedelijke_Evenementen dataset ###### read in datasetds.urban.events <- read.csv(paste0(dir.providedData, "Stedelijke_Evenementen_2010_2017.csv"))# translate columns to englishcolnames(ds.urban.events) <- c("id", 
+                               "event_name", 
+                               "organizer", 
+                               "entree_fee", 
+                               "initial_year", 
+                               "start_date", 
+                               "end_date", 
+                               "nr_days", 
+                               "location", 
+                               "inside_or_outside",
+                               "international_national_regional", 
+                               "nr_visitors",
+                               "year")write.csv(ds.urban.events, file = paste0(dir.providedData, "ds.urban.events.csv"), row.names = FALSE)ds.events <- read.csv(paste0(dir.providedData, "ds.urban.events.csv"))##### Clean / Understand Rotterdampas dataset #####load(paste0(dir.providedData, "rotterdampas.RData"))# load(paste0("/Users/ulifretzen/Swaggathon/providedData/rotterdampas.RData"))ds.rotterdamPas <- Rotterdampas_2017_2018colnames(ds.rotterdamPas) <- c("id", "passH_nb", "age_category", "passH_postcode", 
+                               "passH_p4", "passH_neighborhood", "passH_district", "partner_nb",
+                               "partner_postcode", "partner_p4", "partner_neighborhood", "partner_district",
+                               "activity_nb", "discount", "activity_validity", "inside", 
+                               "nice_weather", "bad_weather", "fun_for_kids", "fun_without_kids", 
+                               "highlight", "use_date", "compensation_incl_tax", "social_group", 
+                               "activity_category", "activity_type", "year", "time")# limit rotterdamPas dataset to activities with partners that are located within rotterdam (based on 30XX postcode)library(data.table)dt.rotterdamPas <- as.data.table(ds.rotterdamPas)dt.rotterdamPas <- dt.rotterdamPas[, "activity_within_rotterdam" := ifelse(substr(partner_p4, 1, 2) == 30, 1, 0)]dt.rotterdamPas$activity_within_rotterdam <- factor(dt.rotterdamPas$activity_within_rotterdam)dt.rotterdamPas <- dt.rotterdamPas[activity_within_rotterdam == 1, ]dt.rotterdamPas$partner_postcode <- dt.rotterdamPas[, gsub(" ", "", dt.rotterdamPas$partner_postcode)]# save datasetsaveRDS(dt.rotterdamPas, file = paste0(dir.providedData, "dt.rotterdamPas.RData"))# Compensation is what the government pays which the people don't, in order to provide the discount##### Clean sport data: Sportparticipatie_Rotterdam_2015_2017.csv #####sportPart.ds <- read_csv("providedData/Sportparticipatie_Rotterdam_2015_2017.csv")## Warning: Missing column names filled in: 'X1' [1]
+## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   Buurt = col_character(),
+##   Postcode = col_character()
+## )
+## See spec(...) for full column specifications.
+sportPart.ds <- sportPart.ds[, 2:ncol(sportPart.ds)]colnames(sportPart.ds) <- c("Neighbourhood",
+                            "Postcode",
+                            "Year",
+                            "Total %",
+                            "4-11 years %",
+                            "12-17 years %",
+                            "18-64 years %",
+                            "65-80 years %",
+                            "81+ years %",
+                            "4-11 years % men",
+                            "4-11 years % women",
+                            "12-17 years % men",
+                            "12-17 years % women",
+                            "18-64 years % men",
+                            "18-64 years % women",
+                            "65-80 years % men",
+                            "65-80 years % women",
+                            "81+ years % men",
+                            "81+ years % women")# Save cleaned datawrite.csv(sportPart.ds,'providedData/cleanSports.csv')##### Import and translate postalcodes_with geoloc #####ds.postalCodes <- read.csv(paste0(dir.providedData, "Postalcodes_with_GeoLoc.csv"))##### Import and prepare weather data #####library(stringr)ds.weather <- read.delim(paste0(dir.additionalData, "ds.weather.txt"))df.weather <- as.data.frame(ds.weather)names(df.weather) <- c("wt")df.weather <- str_split_fixed(df.weather$wt, ",", 12)df.weather <- df.weather[19:1115, 2:12]df.weather <- df.weather[, c(-3,-5,-6,-8,-10)]df.weather <- as.data.frame(df.weather)names(df.weather) <- c("Date", 
+                       "Daily Avg. Wind Speed", 
+                       "Daily Avg. Temperature", 
+                       "Sunshine Duration", 
+                       "Prec. Duration",
+                       "Highest h. amount prec.")df.weather <- df.weather[3:1097, ]df.weather$Date <- as.character(df.weather$Date)df.weather$Date <- sub("([[:digit:]]{4,4})$", "/\\1", df.weather$Date)df.weather$Date <- sub("(.{7})(/*)", "\\1/\\2", df.weather$Date)df.weather$Date <- as.Date(df.weather$Date)saveRDS(df.weather, file = paste0(dir.providedData, "df.weather.RData"))# save script as pdfknitr::stitch('cleaning_data.R')## 
+## 
+## processing file: cleaning_data.Rnw
+## Error in parse_block(g[-1], g[1], params.src): duplicate label 'setup'
+
+
+The R session information (including the OS info, R version and all
+packages used):
+
+sessionInfo()## R version 3.5.3 (2019-03-11)
+## Platform: x86_64-apple-darwin15.6.0 (64-bit)
+## Running under: macOS Mojave 10.14.4
+## 
+## Matrix products: default
+## BLAS: /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
+## 
+## locale:
+## [1] de_DE.UTF-8/de_DE.UTF-8/de_DE.UTF-8/C/de_DE.UTF-8/de_DE.UTF-8
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] stringr_1.4.0     data.table_1.12.2 lubridate_1.7.4   readr_1.3.1      
+## [5] knitr_1.22       
+## 
+## loaded via a namespace (and not attached):
+##  [1] Rcpp_1.0.1        pillar_1.3.1      compiler_3.5.3    plyr_1.8.4       
+##  [5] highr_0.8         bitops_1.0-6      tools_3.5.3       evaluate_0.13    
+##  [9] tibble_2.1.1      gtable_0.3.0      lattice_0.20-38   pkgconfig_2.0.2  
+## [13] png_0.1-7         rlang_0.3.4       Matrix_1.2-15     rstudioapi_0.10  
+## [17] xfun_0.6          dplyr_0.8.0.1     httr_1.4.0        hms_0.4.2        
+## [21] RgoogleMaps_1.4.3 grid_3.5.3        tidyselect_0.2.5  glue_1.3.1       
+## [25] R6_2.4.0          jpeg_0.1-8        ggmap_3.0.0       ggplot2_3.1.1    
+## [29] purrr_0.3.2       tidyr_0.8.3       magrittr_1.5      scales_1.0.0     
+## [33] assertthat_0.2.1  colorspace_1.4-1  tinytex_0.12      stringi_1.4.3    
+## [37] lazyeval_0.2.2    munsell_0.5.0     crayon_1.3.4      rjson_0.2.20
+Sys.time()## [1] "2019-05-02 10:38:42 CEST"
+
+
+
+\end{document}

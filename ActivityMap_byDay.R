@@ -22,6 +22,10 @@ library(doBy)
 library(gganimate)
 
 
+# save script as pdf
+knitr::stitch('ActivityMap_byDay.R')
+
+
 ##### Import and prepare data #####
 
 # load rotterdam pas data
@@ -130,5 +134,3 @@ map.activity.days.animated +
 
 # anim_save(paste0(dir.results, "map.activity.days.animated.mp4"))
 
-# save script as pdf
-knitr::stitch('ActivityMap_byDay.R')
