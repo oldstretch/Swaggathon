@@ -99,7 +99,7 @@ dsPartnerNeiSpat <- merge(dsPartnerNei, data.frame(dfData.RdamClip),
                           allow.cartesian = TRUE)
 
 ggplot(data = dsPartnerNeiSpat[use_date == "Feb"], aes(x = long, y = lat, group = group)) +
-  geom_polygon(aes(fill = count), colour = "white") +
+  geom_polygon() +
   scale_fill_continuous(low="white", high="red")
 
 # Boundaries
@@ -126,17 +126,17 @@ load("mapRotterdam01.Rda")
 
 p01 <- ggplot(dsPartnerNeiSpat, aes(x = long, y = lat, group = group,
                    fill = cut(count, c(0, 10, 100, 500, 2000, 10000, 30000, Inf), 
-                              labels = c("0-10", "10-100", "100-500", "500-2000", "200-10,000", "10,000-30,000", "30,000+")))) +
-  geom_polygon(colour = "white", alpha = 0.8) +
+                              labels = c("0-10", "10-100", "100-500", "500-2,000", "2,000-10,000", "10,000-30,000", "30,000+")))) +
+  geom_polygon() +
   scale_fill_brewer(palette = "YlOrRd") +
   labs(title = "Use of the RotterdamPas per Neighborhood over the year",
          fill = "Times used")
   
-panim <- p01+
+panim1 <- p01+
   transition_time(use_date)  +
-  ggtitle("Month: {frame_time}") 
+  ggtitle("RotterdamPas used per Neighborhoods, for month: {frame_time}") 
 
-gganimate::animate(panim, renderer = av_renderer())
+gganimate::animate(panim1, renderer = av_renderer())
 anim_save("animatedRotterdamPasUse.mp4")
 
 ##########################################################################################################
@@ -153,6 +153,7 @@ dsUserNei[id == "Het Lage Land/Oosterflank"]$id <- "Oosterflank"
 dsUserNei[id == "Hoogvliet-Zuid"]$id <- "Hoogvliet Zuid"
 
 dsUserNei[, count := .N, by = .(id, use_date)]
+dsUserNei[, overallCount := .N, by = "id"]
 
 KopKatAfr <- dsUserNei[id == "Kop van Zuid/Katendrecht/Afrikaanderwijk"]
 kop <- KopKatAfr
@@ -201,29 +202,57 @@ dsUserNei <- dsUserNei[-which(dsUserNei$id == "Hoogvliet Zuid"), ]
 dsUserNei <- unique(dsUserNei)
 dsUserNei <- dsUserNei[complete.cases(dsUserNei), ]
 
+
 dsUserNeiSpat <- merge(dsUserNei, data.frame(dfData.RdamClip), 
                           by = "id", 
                           allow.cartesian = TRUE, 
                        all = TRUE)
 
-ggplot(data = dsUserNeiSpat[use_date == 01], aes(x = long, y = lat, group = group, 
-                                                    fill = cut(count, 
+RotterdampPasOrigin <- ggplot(data = dsUserNeiSpat, aes(x = long, y = lat, group = group, 
+                                                    fill = cut(overallCount, 
                                                                c(0, 10, 100, 500, 2000, 10000, 30000, Inf), 
-                                                               labels = c("0-10", "10-100", "100-500", "500-2000", "200-10,000", "10,000-30,000", "30,000+")))) +
+                                                               labels = c("0-10", "10-100", "100-500", "500-2,000", "2,000-10,000", "10,000-30,000", "30,000+")))) +
   geom_polygon() +
-  scale_colour_brewer(palette = "YlOrRd") +
-  labs(colour = "legend")
+  scale_fill_brewer(palette = "YlOrRd") +
+  labs(title = "Origin of the RotterdamPas holder per Neighborhood",
+       fill = "Times used")
+ggsave("RotterdamPasOrigin.png")
 
 p02 <- ggplot(dsUserNeiSpat, aes(x = long, y = lat, group = group,
-                                    fill = count)) +
-  geom_polygon(colour = "white", alpha = 0.8) +
-  scale_fill_continuous("Use of RotterdamPas", 
-                        low = "white", high = "red") 
+                                 fill = cut(count, c(0, 10, 100, 500, 2000, 10000, Inf), 
+                                            labels = c("0-10", "10-100", "100-500", "500-2,000", "2,000-10,000", "10,000+")))) +
+  geom_polygon() +
+  scale_fill_brewer(palette = "YlOrRd") +
+  labs(title = "Origin of the RotterdamPas per Neighborhood over the year",
+       fill = "Times used") 
 
-panim <- p02+
+panim2 <- p02+
   transition_time(use_date)  +
-  ggtitle("Month: {frame_time}") 
+  ggtitle("RotterdamPas used by Neighborhoods' inhabitants, for month: {frame_time}") 
 
-gganimate::animate(panim, renderer = av_renderer())
+gganimate::animate(panim2, renderer = av_renderer())
 anim_save("animatedRotterdamPasOrigin.mp4")
+
+######## BOXPLOT TIME
+
+
+######## DSITRIB ACTIVITIES PER MONTH
+
+dsActivities <- dsRotterdamPas[, c("activity_category", "use_date")]
+setDT(dsActivities)
+dsActivities[, month := format(dsActivities$use_date, "%B")]
+dsActivities$use_date <- NULL
+orderMonth <- c("January", "February", "March", "April", "May", "June", 
+                "July", "August", "September", "October", "November", "December")
+
+
+distribActivities <- ggplot(dsActivities, aes(month, fill = activity_category)) +
+  geom_bar(position = "fill") + 
+  scale_x_discrete(limits = orderMonth) +
+  scale_fill_brewer(palette = "YlOrRd") +
+  labs(title = "Proportion of Activity Categories over a year", x = "Month", y = "Percent", fill = "Activity Category") +
+  scale_y_continuous(labels = scales::percent) +
+  theme(axis.text.x = element_text(angle = 45))
+ggsave("ActivitiesPerMonth.png")
+
 
