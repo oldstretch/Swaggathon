@@ -21,20 +21,17 @@ library(doBy)
 
 
 # load rotterdam pas data
-ds.rPas.activity <- readRDS(paste0(dir.providedData, 
+ds.rPas.activity.yr <- readRDS(paste0(dir.providedData, 
                                   "dt.rotterdamPas.RData"))
-dt.rPas.activity <- as.data.table(ds.rPas.activity)
-
-# Summarize the number of users per day per activity
-dt.rPas.activity <- dt.rPas.activity[, freq_per_day := .N, by = c("activity_nb", "use_date")]
+dt.rPas.activity.yr <- as.data.table(ds.rPas.activity.yr)
 
 # Summarize the number of users per activity
-dt.rPas.activity <- dt.rPas.activity[, freq_per_activity := .N, by = c("activity_nb")]
+dt.rPas.activity.yr <- dt.rPas.activity.yr[, freq_per_activity := .N, by = c("activity_nb")]
 
 # Sort dataset by postcode
-dt.rPas.activity.test <- dt.rPas.activity.test[order(dt.rPas.activity.test$partner_postcode), ]
+dt.rPas.activity.yr <- dt.rPas.activity.yr[order(dt.rPas.activity.yr$partner_postcode), ]
 
-df.rPas.activity.test <- as.data.frame(dt.rPas.activity.test)
+df.rPas.activity.yr <- as.data.frame(dt.rPas.activity.yr)
 
 # load and prepare geo tag dataset
 ds.zipcodes.geoloc <- read.csv(paste0(dir.providedData, 
@@ -43,35 +40,27 @@ dt.zipcodes.geoloc <- as.data.table(ds.zipcodes.geoloc)
 colnames(dt.zipcodes.geoloc)[2] <- "partner_postcode"
 
 #merge the two datasets
-df.rPas.activity.test <- merge(df.rPas.activity.test, 
-                               dt.zipcodes.geoloc, 
-                               by = "partner_postcode", 
-                               all.x = TRUE)
-
+df.rPas.activity.yr <- merge(df.rPas.activity.yr, 
+                          dt.zipcodes.geoloc, 
+                          by = "partner_postcode", 
+                          all.x = TRUE)
 
 # Deleting duplicates
-df.rPas.activity.test.freqActivity <- df.rPas.activity.test[firstobs(df.rPas.activity.test$activity_nb), ]
+df.rPas.activity.yr <- df.rPas.activity.yr[firstobs(df.rPas.activity.yr$activity_nb), ]
 
-df.rPas.activity.test.freqDay <- df.rPas.activity.test[!duplicated(df.rPas.activity.test[c("activity_nb", 
-                                                                                           "use_date")]), ]
-# Selectiung relevant columns for further analysis / map
-df.rPas.activity.test.freqDay <- df.rPas.activity.test[, c(2, 13, 22, 29, 33, 34)]
+df.rPas.activity.yr <- df.rPas.activity.yr[, c(2, 13, 27, 29, 32, 33)]
 
-df.rPas.activity.test.freqActivity <- df.rPas.activity.test.freqActivity[, c(2, 13, 22, 27, 
-                                                                             30, 33, 34)]
-
-dt.rPas.activity.test.freqActivity <- as.data.table(df.rPas.activity.test.freqActivity)
-
+dt.rPas.activity.yr <- as.data.table(df.rPas.activity.yr)
 
 
 
 ##### Defining underlining map of Rotterdam #####
 
 # Determine how large the map should be (bounding box) given the geocoordinates to plot
-minLat <- min(df.rPas.activity.test.freqActivity$location.lat, na.rm = TRUE)
-maxLat <- max(df.rPas.activity.test.freqActivity$location.lat, na.rm = TRUE)
-minLon <- min(df.rPas.activity.test.freqActivity$location.lng, na.rm = TRUE)
-maxLon <- max(df.rPas.activity.test.freqActivity$location.lng, na.rm = TRUE)
+minLat <- min(dt.rPas.activity.yr$location.lat, na.rm = TRUE)
+maxLat <- max(dt.rPas.activity.yr$location.lat, na.rm = TRUE)
+minLon <- min(dt.rPas.activity.yr$location.lng, na.rm = TRUE)
+maxLon <- max(dt.rPas.activity.yr$location.lng, na.rm = TRUE)
 
 rangeLat <- maxLat - minLat
 rangeLon <- maxLon - minLon
@@ -89,11 +78,11 @@ map.rotterdam.01 <- get_stamenmap(bbox,
 save(map.rotterdam.01, file = paste0(dir.results, "map.rotterdam.01.Rda"))
 
 # Show the map
-map.rotterdam.01 <- ggmap(map.rotterdam.01)
-map.rotterdam.01
+map.Activity.2017 <- ggmap(map.rotterdam.01)
+map.Activity.2017
 
 # Add the activity information from the RotterdamPas dataset for 2017
-map.Activity.2017 <- map.rotterdam.01 + 
+map.Activity.2017 + 
   geom_point(aes(x = location.lng, 
                  y = location.lat,
                  colour = cut(freq_per_activity, 
@@ -101,8 +90,9 @@ map.Activity.2017 <- map.rotterdam.01 +
                               labels = c("<= 10", "11 - 100", "101 - 500", 
                                          "501 - 2,000", "2,001 - 10,000", 
                                          "10,001 - 30,000", "> 30,000"))), 
-             data = dt.rPas.activity.test.freqActivity[year == 2017, ], 
-             size = 1
+             data = dt.rPas.activity.yr[year == 2017, ], 
+             size = 4,
+             alpha = 0.5
              ) + 
   scale_colour_brewer(palette = "YlOrRd") +
   ggtitle(label = "Activities Used by RotterdamPas Owners in 2017") +
@@ -110,11 +100,16 @@ map.Activity.2017 <- map.rotterdam.01 +
   ylab(label = "Latitude") + 
   labs(colour = "Number of Users")
 
+
 ggsave(paste0(dir.results,"map.Activity.2017.pdf"))
 
 
 # Add the activity information from the RotterdamPas dataset for 2018
-map.Activity.2018 <- map.rotterdam.01 + 
+# Show the map
+map.Activity.2018 <- ggmap(map.rotterdam.01)
+map.Activity.2018
+
+map.Activity.2018 + 
   geom_point(aes(x = location.lng, 
                  y = location.lat,
                  colour = cut(freq_per_activity, 
@@ -122,8 +117,9 @@ map.Activity.2018 <- map.rotterdam.01 +
                               labels = c("<= 10", "11 - 100", "101 - 500", 
                                          "501 - 2,000", "2,001 - 10,000", 
                                          "10,001 - 30,000", "> 30,000"))), 
-  data = dt.rPas.activity.test.freqActivity[year == 2018, ], 
-  size = 1
+  data = dt.rPas.activity.yr[year == 2018, ], 
+  size = 4,
+  alpha = 0.5
   ) + 
   scale_colour_brewer(palette = "YlOrRd") +
   ggtitle(label = "Activities Used by RotterdamPas Owners in 2018") +
