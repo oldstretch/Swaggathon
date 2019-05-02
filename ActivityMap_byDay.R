@@ -55,20 +55,21 @@ df.rPas.activity.day <- merge(df.rPas.activity.day,
 df.rPas.activity.day <- df.rPas.activity.day[!duplicated(df.rPas.activity.day[c("activity_nb", 
                                                                                 "day_of_week")]), ]
 
+
 # Selectiung relevant columns for further analysis / map
-df.rPas.activity.day <- df.rPas.activity.day[, c(2, 13, 29, 30, 33, 34)]
+df.rPas.activity.day <- df.rPas.activity.day[, c(2, 13, 30, 31, 34, 35)]
 
 dt.rPas.activity.day <- as.data.table(df.rPas.activity.day)
 
 dt.rPas.activity.day$day_of_week <- factor(dt.rPas.activity.day$day_of_week, 
                                            levels = c("Montag", "Dienstag", "Mittwoch", "Donnerstag", 
-                                                      "Freitag", "Samstag", "Sonntag"))
+                                                      "Freitag", "Samstag", "Sonntag"), 
+                                           labels = c("Monday", "Tuesday", "Wednesday", "Thursday", 
+                                                      "Friday", "Saturday", "Sunday"))
 
 dt.rPas.activity.day <- dt.rPas.activity.day[!is.na(dt.rPas.activity.day$day_of_week), ]
 dt.rPas.activity.day <- dt.rPas.activity.day[!is.na(dt.rPas.activity.day$location.lat), ]
 dt.rPas.activity.day <- dt.rPas.activity.day[!is.na(dt.rPas.activity.day$location.lng), ]
-
-# dt.rPas.activity.day <- dt.rPas.activity.day[, c(2, 3, 5, 6)]
 
 View(dt.rPas.activity.day)
 
@@ -99,24 +100,7 @@ save(map.rotterdam.02, file = paste0(dir.results, "map.rotterdam.02.Rda"))
 map.activity.days <- ggmap(map.rotterdam.02)
 map.activity.days
 
-# Add the activity information from the RotterdamPas dataset for 2017
-# map.activity.days + 
-#   geom_point(aes(x = location.lng, 
-#                  y = location.lat,
-#                  colour = day_of_week), 
-#              data = dt.rPas.activity.day, 
-#              size = 3,
-#              alpha = 0.20
-#   ) + 
-#   scale_colour_brewer(palette = "YlOrRd") +
-#   ggtitle(label = "Activities Used by RotterdamPas Owners per Weekday") +
-#   xlab(label = "Longitude") + 
-#   ylab(label = "Latitude") + 
-#   labs(colour = "Number of Users")
-# 
-# map.activity.days + 
-#   transition_states(dt.rPas.activity.day$day_of_week)
-
+# Add the activity information from the RotterdamPas dataset
 map.activity.days.animated <- map.activity.days + 
   geom_point(aes(x = location.lng, 
                  y = location.lat, 
@@ -138,10 +122,10 @@ map.activity.days.animated
 
 map.activity.days.animated + 
   transition_states(dt.rPas.activity.day$day_of_week, 
-                    transition_length = 10, 
-                    state_length = 3) + 
-  labs(title = "{closest_state}")
+                    transition_length = 15, 
+                    state_length = 20) + 
+  labs(title = "Activities Used by RotterdamPas Owners per Month", 
+       subtitle = "{closest_state}")
   
 
-  
-ggsave(paste0(dir.results,"map.activity.days.animated.pdf"))
+anim_save(paste0(dir.results, "map.activity.days.animated.mp4"))
