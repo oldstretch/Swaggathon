@@ -71,9 +71,10 @@ colnames(ds.rotterdamPas) <- c("id", "passH_nb", "age_category", "passH_postcode
                                "activity_nb", "discount", "activity_validity", "inside", 
                                "nice_weather", "bad_weather", "fun_for_kids", "fun_without_kids", 
                                "highlight", "use_date", "compensation_incl_tax", "social_group", 
-                               "activity_category", "activity_type", "year")
+                               "activity_category", "activity_type", "year", "time")
 
 # limit rotterdamPas dataset to activities with partners that are located within rotterdam (based on 30XX postcode)
+library(data.table)
 dt.rotterdamPas <- as.data.table(ds.rotterdamPas)
 dt.rotterdamPas <- dt.rotterdamPas[, "activity_within_rotterdam" := ifelse(substr(partner_p4, 1, 2) == 30, 1, 0)]
 dt.rotterdamPas$activity_within_rotterdam <- factor(dt.rotterdamPas$activity_within_rotterdam)
@@ -106,7 +107,7 @@ dt.pas.and.locs <- merge(dt.rotterdamPas,
                          by.y = "postalcode",
                          all.x = TRUE,
                          all.y = FALSE)
-colnames(dt.pas.and.locs)[29:30] <- c("lat.passH", "lng.passH")
+colnames(dt.pas.and.locs)[30:31] <- c("lat.passH", "lng.passH")
 
 dt.pas.and.locs <- merge(dt.pas.and.locs, 
                          post.code.red, 
@@ -114,7 +115,7 @@ dt.pas.and.locs <- merge(dt.pas.and.locs,
                          by.y = "postalcode",
                          all.x = TRUE,
                          all.y = FALSE)
-colnames(dt.pas.and.locs)[31:32] <- c("lat.partner", "lng.partner")
+colnames(dt.pas.and.locs)[32:33] <- c("lat.partner", "lng.partner")
 
 if(is.na(dt.pas.and.locs$lat.partner)) {
   dt.pas.and.locs$partner_postcode <- post.code.red6[
@@ -139,7 +140,7 @@ dt.pas.and.locs <- merge(dt.pas.and.locs,
                          by.y = "postalcode",
                          all.x = TRUE,
                          all.y = FALSE)
-colnames(dt.pas.and.locs)[29:30] <- c("lat.passH", "lng.passH")
+colnames(dt.pas.and.locs)[30:31] <- c("lat.passH", "lng.passH")
 
 dt.pas.and.locs <- merge(dt.pas.and.locs, 
                          post.code.red, 
@@ -147,7 +148,7 @@ dt.pas.and.locs <- merge(dt.pas.and.locs,
                          by.y = "postalcode",
                          all.x = TRUE,
                          all.y = FALSE)
-colnames(dt.pas.and.locs)[31:32] <- c("lat.partner", "lng.partner")
+colnames(dt.pas.and.locs)[32:33] <- c("lat.partner", "lng.partner")
 
 dt.pas.and.locs <- dt.pas.and.locs[!is.na(dt.pas.and.locs$lng.passH), ]
 
