@@ -60,9 +60,17 @@ df.rPas.activity.day <- df.rPas.activity.day[, c(2, 13, 29, 30, 33, 34)]
 
 dt.rPas.activity.day <- as.data.table(df.rPas.activity.day)
 
+dt.rPas.activity.day$day_of_week <- factor(dt.rPas.activity.day$day_of_week, 
+                                           levels = c("Montag", "Dienstag", "Mittwoch", "Donnerstag", 
+                                                      "Freitag", "Samstag", "Sonntag"))
 
-View(df.rPas.activity.day)
+dt.rPas.activity.day <- dt.rPas.activity.day[!is.na(dt.rPas.activity.day$day_of_week), ]
+dt.rPas.activity.day <- dt.rPas.activity.day[!is.na(dt.rPas.activity.day$location.lat), ]
+dt.rPas.activity.day <- dt.rPas.activity.day[!is.na(dt.rPas.activity.day$location.lng), ]
 
+# dt.rPas.activity.day <- dt.rPas.activity.day[, c(2, 3, 5, 6)]
+
+View(dt.rPas.activity.day)
 
 ##### Defining underlining map of Rotterdam #####
 
@@ -92,29 +100,48 @@ map.activity.days <- ggmap(map.rotterdam.02)
 map.activity.days
 
 # Add the activity information from the RotterdamPas dataset for 2017
-map.activity.days + 
-  geom_point(aes(x = location.lng, 
-                 y = location.lat,
-                 colour = cut(freq_per_day, 
-                              c(0, 10, 50, 100, 250, 1000, 5000, Inf), 
-                              labels = c("<= 10", "11 - 50", "51 - 100", 
-                                         "101 - 250", "251 - 1,000", 
-                                         "1,001 - 5,000", "> 5,001"))), 
-             data = dt.rPas.activity.day, 
-             size = 3,
-             alpha = 0.20
-  ) + 
-  scale_colour_brewer(palette = "YlOrRd") +
-  ggtitle(label = "Activities Used by RotterdamPas Owners per Weekday") +
-  xlab(label = "Longitude") + 
-  ylab(label = "Latitude") + 
-  labs(colour = "Number of Users")
+# map.activity.days + 
+#   geom_point(aes(x = location.lng, 
+#                  y = location.lat,
+#                  colour = day_of_week), 
+#              data = dt.rPas.activity.day, 
+#              size = 3,
+#              alpha = 0.20
+#   ) + 
+#   scale_colour_brewer(palette = "YlOrRd") +
+#   ggtitle(label = "Activities Used by RotterdamPas Owners per Weekday") +
+#   xlab(label = "Longitude") + 
+#   ylab(label = "Latitude") + 
+#   labs(colour = "Number of Users")
+# 
+# map.activity.days + 
+#   transition_states(dt.rPas.activity.day$day_of_week)
 
-map.activity.days + 
-  transition_states(dt.rPas.activity.day&week_of_day, 
-                    transition_length = 1, 
-                    state_length = 8) + 
+map.activity.days.animated <- map.activity.days + 
+  geom_point(aes(x = location.lng, 
+                 y = location.lat, 
+                 colour = cut(freq_per_day,
+                              c(0, 10, 50, 100, 500, 2000, 10000, Inf),
+                              labels = c("<= 10", "11 - 50", "51 - 100",
+                                         "101 - 500", "501 - 2,000",
+                                         "2,001 - 10,000", "> 10,000"))),
+             data = dt.rPas.activity.day, 
+             size = 3, 
+             alpha = 0.20
+             ) + 
+  scale_colour_brewer(palette = "YlOrRd") + 
+    xlab(label = "Longitude") +
+    ylab(label = "Latitude") +
+    labs(colour = "Number of Users")
+
+map.activity.days.animated
+
+map.activity.days.animated + 
+  transition_states(dt.rPas.activity.day$day_of_week, 
+                    transition_length = 10, 
+                    state_length = 3) + 
   labs(title = "{closest_state}")
+  
 
   
-ggsave(paste0(dir.results,"map.activity.days.pdf"))
+ggsave(paste0(dir.results,"map.activity.days.animated.pdf"))
