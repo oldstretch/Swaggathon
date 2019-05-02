@@ -6,7 +6,6 @@ library(plyr)
 library(reshape2)
 library(ggplot2)
 
-View(ds.rpas.cooc)
 
 # Analyze the distribution of activities based on type
 activity.shares <- ddply(ds.rpas.cooc,
@@ -30,7 +29,10 @@ one.percent.barrier <- sum(activity.shares.ordered$nOccurances) * 0.01
 ggplot(activity.shares.ordered, aes(x = n, y = nOccurances)) +
   geom_point() +
   geom_line() +
-  geom_line(y = one.percent.barrier)
+  geom_line(y = one.percent.barrier) +
+  labs(title = "Number of Observations per activity type", y = "Activity type")
+
+ggsave("/Users/ulifretzen/Swaggathon/results/Number_of_Observations.png")
 
 # Conclusions: Some activities are way more common than others
 
@@ -65,7 +67,9 @@ passholders.per.nActivity.ordered.40.act <- head(passholders.per.nActivity.order
 
 ggplot(passholders.per.nActivity.ordered.40.act, aes(x = nActivities, y = nPassHolders)) +
   geom_point() +
-  geom_line()
+  geom_line() +
+  labs(title = "Number of people per number of activities")
+ggsave("/Users/ulifretzen/Swaggathon/results/Number_of_passholders_with_number_of_activities.png")
 
 # Co-occurance analysis for activity type
 df.rpas.wide <- dcast(ds.rpas.cooc, passH_nb ~ activity_type,
@@ -98,6 +102,7 @@ library(arulesViz)
 
 # Create visualizations
 plot(myRules)
+
 
 plot(myRules, shading = "order",
      control = list(main = "Two-key plot"),
