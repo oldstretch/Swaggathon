@@ -23,7 +23,7 @@ library(doBy)
 
 # load rotterdam pas data
 ds.rPas.activity <- readRDS(paste0(dir.providedData, 
-                                  "dt.rotterdamPas.RData"))
+                                   "dt.rotterdamPas.RData"))
 dt.rPas.activity <- as.data.table(ds.rPas.activity)
 
 # Summarize the number of users per day per activity
@@ -83,8 +83,8 @@ bbox <- c(minLon - mrg*rangeLon, minLat - mrg*rangeLat,
 
 # Get the map
 map.rotterdam.01 <- get_stamenmap(bbox, 
-                               zoom = 12, 
-                               maptype = "terrain")
+                                  zoom = 12, 
+                                  maptype = "terrain")
 
 # Store the map
 save(map.rotterdam.01, file = paste0(dir.results, "map.rotterdam.01.Rda"))
@@ -104,7 +104,7 @@ map.Activity.2017 <- map.rotterdam.01 +
                                          "10,001 - 30,000", "> 30,000"))), 
              data = dt.rPas.activity.test.freqActivity[year == 2017, ], 
              size = 1
-             ) + 
+  ) + 
   scale_colour_brewer(palette = "YlOrRd") +
   ggtitle(label = "Activities Used by RotterdamPas Owners in 2017") +
   xlab(label = "Longitude") + 
@@ -123,8 +123,8 @@ map.Activity.2018 <- map.rotterdam.01 +
                               labels = c("<= 10", "11 - 100", "101 - 500", 
                                          "501 - 2,000", "2,001 - 10,000", 
                                          "10,001 - 30,000", "> 30,000"))), 
-  data = dt.rPas.activity.test.freqActivity[year == 2018, ], 
-  size = 1
+             data = dt.rPas.activity.test.freqActivity[year == 2018, ], 
+             size = 1
   ) + 
   scale_colour_brewer(palette = "YlOrRd") +
   ggtitle(label = "Activities Used by RotterdamPas Owners in 2018") +
@@ -133,5 +133,3 @@ map.Activity.2018 <- map.rotterdam.01 +
   labs(colour = "Number of Users")
 
 ggsave(paste0(dir.results,"map.Activity.2018.pdf"))
-
-

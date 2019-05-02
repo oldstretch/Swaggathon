@@ -1,4 +1,4 @@
-##### install and load necessary libraries #####
+# install and load necessary libraries
 
 # install.packages("data.table", dependencies = TRUE)
 library(data.table)
@@ -19,7 +19,6 @@ library(RColorBrewer)
 library(doBy)
 
 
-##### Import and prepare data #####
 
 # load rotterdam pas data
 ds.rPas.activity <- readRDS(paste0(dir.providedData, 
