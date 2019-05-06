@@ -84,7 +84,6 @@ dt.rPas.activity.day.pc <- dt.rPas.activity.day.pc[!duplicated(dt.rPas.activity.
 
 # Plot frequency distribution
 dt.rPas.activity.day.pc <- dt.rPas.activity.day.pc[order(freq_per_day_pc), ]
-barplot(dt.rPas.activity.day.pc$freq_per_day_pc)
 
 ##### Defining underlining map of Rotterdam #####
 
