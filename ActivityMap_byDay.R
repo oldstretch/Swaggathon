@@ -1,3 +1,4 @@
+
 ##### install and load necessary libraries #####
 
 # install.packages("data.table", dependencies = TRUE)
@@ -30,7 +31,7 @@ library(gganimate)
 
 # load rotterdam pas data
 ds.rPas.activity.day <- readRDS(paste0(dir.providedData, 
-                                   "dt.rotterdamPas.RData"))
+                                       "dt.rotterdamPas.RData"))
 dt.rPas.activity.day <- as.data.table(ds.rPas.activity.day)
 
 dt.rPas.activity.day <- dt.rPas.activity.day[, day_of_week := weekdays(dt.rPas.activity.day$use_date)]
@@ -51,9 +52,9 @@ colnames(dt.zipcodes.geoloc)[2] <- "partner_postcode"
 
 #merge the two datasets
 df.rPas.activity.day <- merge(df.rPas.activity.day, 
-                               dt.zipcodes.geoloc, 
-                               by = "partner_postcode", 
-                               all.x = TRUE)
+                              dt.zipcodes.geoloc, 
+                              by = "partner_postcode", 
+                              all.x = TRUE)
 
 # Deleting duplicates
 df.rPas.activity.day <- df.rPas.activity.day[!duplicated(df.rPas.activity.day[c("activity_nb", 
@@ -126,11 +127,11 @@ map.activity.days.pc <- map.activity.days.pc +
                                          "5,001 - 15,000", "> 15,000"))),
              data = dt.rPas.activity.day.pc, 
              size = 1.5, 
-             ) + 
+  ) + 
   scale_colour_brewer(palette = "YlOrRd") + 
-    xlab(label = "Longitude") +
-    ylab(label = "Latitude") +
-    labs(colour = "Number of Users")
+  xlab(label = "Longitude") +
+  ylab(label = "Latitude") +
+  labs(colour = "Number of Users")
 
 map.activity.days.pc
 
@@ -139,8 +140,10 @@ map.activity.days.pc.animated <- map.activity.days.pc +
                     transition_length = 1, 
                     state_length = 25) + 
   labs(title = "Activities Used by RotterdamPas Owners per Day", 
-       subtitle = "{closest_state}")
-  
+       subtitle = "{closest_state}") + 
+  theme(plot.title = element_text(hjust = 0.5, color = "#666666"),
+        plot.subtitle = element_text(hjust = 0.5, color = "#666666"))
+
 gganimate::animate(map.activity.days.pc.animated, renderer = av_renderer())
 
 anim_save(paste0(dir.results, "map.activity.days.pc.animated.mp4"))
@@ -173,7 +176,9 @@ map.activity.days.pc.wednesday <- map.activity.days.pc.wednesday +
   ylab(label = "Latitude") +
   labs(title = "Activities Used by RotterdamPas Owners per Day", 
        subtitle = "Wednesday", 
-       colour = "Number of Users")
+       colour = "Number of Users") + 
+  theme(plot.title = element_text(hjust = 0.5, color = "#666666"),
+        plot.subtitle = element_text(hjust = 0.5, color = "#666666"))
 
 map.activity.days.pc.wednesday
 ggsave(paste0(dir.results, "map.activity.days.pc.wednesday.pdf"))
@@ -207,8 +212,9 @@ map.activity.days.pc.sunday <- map.activity.days.pc.sunday +
   ylab(label = "Latitude") +
   labs(title = "Activities Used by RotterdamPas Owners per Day", 
        subtitle = "Sunday", 
-       colour = "Number of Users")
+       colour = "Number of Users") + 
+  theme(plot.title = element_text(hjust = 0.5, color = "#666666"),
+        plot.subtitle = element_text(hjust = 0.5, color = "#666666"))
 
 map.activity.days.pc.sunday
 ggsave(paste0(dir.results, "map.activity.days.pc.sunday.pdf"))
-
