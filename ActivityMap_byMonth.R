@@ -128,7 +128,7 @@ map.activity.months.pc <- map.activity.months.pc +
   xlab(label = "Longitude") + 
   ylab(label = "Latitude") + 
   labs(colour = "Number of Users")
-  
+
 
 map.activity.months.pc
 
