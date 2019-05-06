@@ -78,26 +78,29 @@ dt.rPas.activity.day <- dt.rPas.activity.day[!is.na(dt.rPas.activity.day$locatio
 
 ##### Defining underlining map of Rotterdam #####
 
-# Determine how large the map should be (bounding box) given the geocoordinates to plot
-minLat <- min(dt.rPas.activity.day$location.lat, na.rm = TRUE)
-maxLat <- max(dt.rPas.activity.day$location.lat, na.rm = TRUE)
-minLon <- min(dt.rPas.activity.day$location.lng, na.rm = TRUE)
-maxLon <- max(dt.rPas.activity.day$location.lng, na.rm = TRUE)
+# # Determine how large the map should be (bounding box) given the geocoordinates to plot 
+# minLat <- min(dt.rPas.activity.day$location.lat, na.rm = TRUE)
+# maxLat <- max(dt.rPas.activity.day$location.lat, na.rm = TRUE)
+# minLon <- min(dt.rPas.activity.day$location.lng, na.rm = TRUE)
+# maxLon <- max(dt.rPas.activity.day$location.lng, na.rm = TRUE)
+# 
+# rangeLat <- maxLat - minLat
+# rangeLon <- maxLon - minLon
+# 
+# mrg  <- 0.10   # Apply 10% margin in all directions
+# bbox <- c(minLon - mrg*rangeLon, minLat - mrg*rangeLat, 
+#           maxLon + mrg*rangeLon, maxLat + mrg*rangeLat)
+# 
+# # Get the map
+# map.rotterdam.02 <- get_stamenmap(bbox, 
+#                                   zoom = 12, 
+#                                   maptype = "terrain")
 
-rangeLat <- maxLat - minLat
-rangeLon <- maxLon - minLon
+# # Store the map
+# save(map.rotterdam.02, file = paste0(dir.results, "map.rotterdam.02.Rda"))
 
-mrg  <- 0.10   # Apply 10% margin in all directions
-bbox <- c(minLon - mrg*rangeLon, minLat - mrg*rangeLat, 
-          maxLon + mrg*rangeLon, maxLat + mrg*rangeLat)
-
-# Get the map
-map.rotterdam.02 <- get_stamenmap(bbox, 
-                                  zoom = 12, 
-                                  maptype = "terrain")
-
-# Store the map
-save(map.rotterdam.02, file = paste0(dir.results, "map.rotterdam.02.Rda"))
+# Load saved map of Rotterdam 
+load(paste0(dir.results, "map.rotterdam.02.Rda"))
 
 # Show the map
 map.activity.days <- ggmap(map.rotterdam.02)
@@ -133,4 +136,67 @@ map.activity.days.animated <- map.activity.days +
 gganimate::animate(map.activity.days.animated, renderer = av_renderer())
 
 anim_save(paste0(dir.results, "map.activity.days.animated.mp4"))
+
+
+##### Static map that shows activities on Wednesdays #####
+
+# Limit dataset to activities that take place on Wednesdays 
+
+dt.rPas.activity.day.wednesday <- dt.rPas.activity.day[day_of_week == "Wednesday"]
+
+
+# Create graph that only consist of activities on Wednesdays
+map.activity.days.wednesday <- map.activity.days + 
+  geom_point(aes(x = location.lng, 
+                 y = location.lat, 
+                 colour = cut(freq_per_day,
+                              c(0, 10, 50, 100, 500, 2000, 10000, Inf),
+                              labels = c("<= 10", "11 - 50", "51 - 100",
+                                         "101 - 500", "501 - 2,000",
+                                         "2,001 - 10,000", "> 10,000"))),
+             data = dt.rPas.activity.day.wednesday, 
+             size = 1.5, 
+             alpha = 0.50
+  ) + 
+  scale_colour_brewer(palette = "YlOrRd") + 
+  xlab(label = "Longitude") +
+  ylab(label = "Latitude") +
+  labs(title = "Activities Used by RotterdamPas Owners per Day", 
+       subtitle = "Wednesday", 
+       colour = "Number of Users")
+
+map.activity.days.wednesday
+ggsave(paste0(dir.results, "map.activity.days.wednesday.pdf"))
+
+
+
+##### Static map that shows activities on Sundays #####
+
+# Limit dataset to activities that take place on Sundays
+
+dt.rPas.activity.day.sunday <- dt.rPas.activity.day[day_of_week == "Sunday"]
+
+
+# Create graph that only consist of activities on Sundays
+map.activity.days.sunday <- map.activity.days + 
+  geom_point(aes(x = location.lng, 
+                 y = location.lat, 
+                 colour = cut(freq_per_day,
+                              c(0, 10, 50, 100, 500, 2000, 10000, Inf),
+                              labels = c("<= 10", "11 - 50", "51 - 100",
+                                         "101 - 500", "501 - 2,000",
+                                         "2,001 - 10,000", "> 10,000"))),
+             data = dt.rPas.activity.day.sunday, 
+             size = 1.5, 
+             alpha = 0.50
+  ) + 
+  scale_colour_brewer(palette = "YlOrRd") + 
+  xlab(label = "Longitude") +
+  ylab(label = "Latitude") +
+  labs(title = "Activities Used by RotterdamPas Owners per Day", 
+       subtitle = "Sunday", 
+       colour = "Number of Users")
+
+map.activity.days.sunday
+ggsave(paste0(dir.results, "map.activity.days.sunday.pdf"))
 
