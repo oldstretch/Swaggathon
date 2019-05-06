@@ -13,6 +13,8 @@ rmarkdown::render("main.R",
 # # Elena's working directory
 # dir <- "C:/Users/elena/OneDrive/Desktop/Big Data and Business Analytics/Swaggathon/"
 
+# Uli's working directory
+dir <- "/Users/ulifretzen/Swaggathon/"
 
 # Felix's working directory
 dir <- "/Users/felixmeindl/Documents/GitHub/Swaggathon/"
