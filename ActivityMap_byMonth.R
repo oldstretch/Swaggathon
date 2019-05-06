@@ -65,35 +65,41 @@ dt.rPas.activity.month <- dt.rPas.activity.month[!is.na(location.lat), ]
 dt.rPas.activity.month$month_of_year <- factor(dt.rPas.activity.month$month_of_year, 
                                                levels = c("Januar", "Februar", "März", "April", "Mai", 
                                                           "Juni", "Juli", "August", "September", 
-                                                          "Oktober", "November", "Dezember"))
+                                                          "Oktober", "November", "Dezember"), 
+                                               labels = c("January", "February", "March", "April", "May", 
+                                                          "June", "Juli", "August", "September", 
+                                                          "October", "November", "December"))
 
 
 
 ##### Defining underlining map of Rotterdam #####
 
-# Determine how large the map should be (bounding box) given the geocoordinates to plot
-minLat <- min(dt.rPas.activity.month$location.lat, na.rm = TRUE)
-maxLat <- max(dt.rPas.activity.month$location.lat, na.rm = TRUE)
-minLon <- min(dt.rPas.activity.month$location.lng, na.rm = TRUE)
-maxLon <- max(dt.rPas.activity.month$location.lng, na.rm = TRUE)
+# # Determine how large the map should be (bounding box) given the geocoordinates to plot
+# minLat <- min(dt.rPas.activity.month$location.lat, na.rm = TRUE)
+# maxLat <- max(dt.rPas.activity.month$location.lat, na.rm = TRUE)
+# minLon <- min(dt.rPas.activity.month$location.lng, na.rm = TRUE)
+# maxLon <- max(dt.rPas.activity.month$location.lng, na.rm = TRUE)
+# 
+# rangeLat <- maxLat - minLat
+# rangeLon <- maxLon - minLon
+# 
+# mrg  <- 0.10   # Apply 10% margin in all directions
+# bbox <- c(minLon - mrg*rangeLon, minLat - mrg*rangeLat, 
+#           maxLon + mrg*rangeLon, maxLat + mrg*rangeLat)
+# 
+# # Get the map
+# map.rotterdam.03 <- get_stamenmap(bbox, 
+#                                   zoom = 12, 
+#                                   maptype = "terrain")
+# 
+# # Store the map
+# save(map.rotterdam.03, file = paste0(dir.results, "map.rotterdam.03.Rda"))
 
-rangeLat <- maxLat - minLat
-rangeLon <- maxLon - minLon
+load(paste0(dir.results, "map.rotterdam.02.Rda"))
 
-mrg  <- 0.10   # Apply 10% margin in all directions
-bbox <- c(minLon - mrg*rangeLon, minLat - mrg*rangeLat, 
-          maxLon + mrg*rangeLon, maxLat + mrg*rangeLat)
-
-# Get the map
-map.rotterdam.03 <- get_stamenmap(bbox, 
-                                  zoom = 12, 
-                                  maptype = "terrain")
-
-# Store the map
-save(map.rotterdam.03, file = paste0(dir.results, "map.rotterdam.03.Rda"))
 
 # Show the map
-map.activity.months <- ggmap(map.rotterdam.03)
+map.activity.months <- ggmap(map.rotterdam.02)
 map.activity.months
 
 # Add the activity information from the RotterdamPas dataset for 2017
@@ -106,7 +112,7 @@ map.activity.months <- map.activity.months +
                                          "101 - 250", "251 - 1,000", 
                                          "1,001 - 5,000", "> 5,001"))), 
              data = dt.rPas.activity.month, 
-             size = 2,
+             size = 1.5,
              alpha = 0.50
   ) + 
   scale_colour_brewer(palette = "YlOrRd") +
@@ -127,3 +133,66 @@ map.activity.months.animated <- map.activity.months +
 gganimate::animate(map.activity.months.animated, renderer = av_renderer())
 
 anim_save(paste0(dir.results, "map.activity.months.animated.mp4"))
+
+
+##### Static map that shows activities during Juli #####
+
+# Limit dataset to activities that take place during Juli
+
+dt.rPas.activity.month.juli <- dt.rPas.activity.month[month_of_year == "Juli", ]
+
+
+# Create graph that only consist of activities on Juli
+map.activity.month.juli <- map.activity.months + 
+  geom_point(aes(x = location.lng, 
+                 y = location.lat, 
+                 colour = cut(freq_per_month, 
+                              c(0, 10, 50, 100, 250, 1000, 5000, Inf), 
+                              labels = c("<= 10", "11 - 50", "51 - 100", 
+                                         "101 - 250", "251 - 1,000", 
+                                         "1,001 - 5,000", "> 5,001"))), 
+             data = dt.rPas.activity.month.wednesday, 
+             size = 1.5, 
+             alpha = 0.50
+  ) + 
+  scale_colour_brewer(palette = "YlOrRd") + 
+  xlab(label = "Longitude") +
+  ylab(label = "Latitude") +
+  labs(title = "Activities Used by RotterdamPas Owners per Month", 
+       subtitle = "Juli", 
+       colour = "Number of Users")
+
+map.activity.month.juli
+ggsave(paste0(dir.results, "map.activity.month.juli.pdf"))
+
+
+
+##### Static map that shows activities during December #####
+
+# Limit dataset to activities that take place during December
+
+dt.rPas.activity.month.december <- dt.rPas.activity.month[month_of_year == "December", ]
+
+
+# Create graph that only consist of activities on December
+map.activity.month.december <- map.activity.months + 
+  geom_point(aes(x = location.lng, 
+                 y = location.lat, 
+                 colour = cut(freq_per_month, 
+                              c(0, 10, 50, 100, 250, 1000, 5000, Inf), 
+                              labels = c("<= 10", "11 - 50", "51 - 100", 
+                                         "101 - 250", "251 - 1,000", 
+                                         "1,001 - 5,000", "> 5,001"))), 
+             data = dt.rPas.activity.month.december, 
+             size = 1.5, 
+             alpha = 0.50
+  ) + 
+  scale_colour_brewer(palette = "YlOrRd") + 
+  xlab(label = "Longitude") +
+  ylab(label = "Latitude") +
+  labs(title = "Activities Used by RotterdamPas Owners per Month", 
+       subtitle = "December", 
+       colour = "Number of Users")
+
+map.activity.month.december
+ggsave(paste0(dir.results, "map.activity.month.december.pdf"))
