@@ -60,9 +60,8 @@ ds.events <- read.csv(paste0(dir.providedData, "ds.urban.events.csv"))
 
 
 ##### Clean / Understand Rotterdampas dataset #####
-dir.providedData <- "/Users/ulifretzen/Swaggathon/providedData/"
 load(paste0(dir.providedData, "rotterdampas.RData"))
-# load(paste0("/Users/ulifretzen/Swaggathon/providedData/rotterdampas.RData"))
+
 ds.rotterdamPas <- Rotterdampas_2017_2018
 
 colnames(ds.rotterdamPas) <- c("id", "passH_nb", "age_category", "passH_postcode", 
@@ -84,7 +83,6 @@ dt.rotterdamPas$partner_postcode <- dt.rotterdamPas[, gsub(" ", "", dt.rotterdam
 
 
 # Translate Dutch Activity types into English
-unique(dt.rotterdamPas$activity_type)
 
 dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Natuurparken"] <- "Nature Park"
 dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Overig"] <- "Others"

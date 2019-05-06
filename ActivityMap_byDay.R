@@ -139,7 +139,9 @@ map.activity.days.pc.animated <- map.activity.days.pc +
                     transition_length = 1, 
                     state_length = 25) + 
   labs(title = "Activities Used by RotterdamPas Owners per Day", 
-       subtitle = "{closest_state}")
+       subtitle = "{closest_state}") + 
+  theme(plot.title = element_text(hjust = 0.5, color = "#666666"),
+        plot.subtitle = element_text(hjust = 0.5, color = "#666666"))
   
 gganimate::animate(map.activity.days.pc.animated, renderer = av_renderer())
 
@@ -173,7 +175,9 @@ map.activity.days.pc.wednesday <- map.activity.days.pc.wednesday +
   ylab(label = "Latitude") +
   labs(title = "Activities Used by RotterdamPas Owners per Day", 
        subtitle = "Wednesday", 
-       colour = "Number of Users")
+       colour = "Number of Users") + 
+  theme(plot.title = element_text(hjust = 0.5, color = "#666666"),
+        plot.subtitle = element_text(hjust = 0.5, color = "#666666"))
 
 map.activity.days.pc.wednesday
 ggsave(paste0(dir.results, "map.activity.days.pc.wednesday.pdf"))
@@ -207,7 +211,9 @@ map.activity.days.pc.sunday <- map.activity.days.pc.sunday +
   ylab(label = "Latitude") +
   labs(title = "Activities Used by RotterdamPas Owners per Day", 
        subtitle = "Sunday", 
-       colour = "Number of Users")
+       colour = "Number of Users") + 
+  theme(plot.title = element_text(hjust = 0.5, color = "#666666"),
+        plot.subtitle = element_text(hjust = 0.5, color = "#666666"))
 
 map.activity.days.pc.sunday
 ggsave(paste0(dir.results, "map.activity.days.pc.sunday.pdf"))
