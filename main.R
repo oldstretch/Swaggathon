@@ -1,7 +1,11 @@
-# install and import the necessary packages
 
-# # install.packages("knitr", dependencies = TRUE)
-# library(knitr)
+rmarkdown::render("main.R", 
+                  "pdf_document", 
+                  paste0(dir.results, "main.pdf"), 
+                  output_options = list(pandoc_args = c("--metadata=title:\"Appendix: main.R\"", 
+                                                        "--metadata=author:\"Group13\"", 
+                                                        "--metadata=date:\"07.05.2019\"")), 
+                  clean = TRUE)
 
 
 # set working directory 
