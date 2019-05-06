@@ -75,7 +75,7 @@ dt.rPas.activity.pc <- dt.rPas.activity[, freq_per_year_pc := sum(freq_per_year)
 dt.rPas.activity.pc <- dt.rPas.activity.pc[, c("year", "location.lat", "location.lng", "freq_per_year_pc")]
 dt.rPas.activity.pc <- dt.rPas.activity.pc[!duplicated(dt.rPas.activity.pc), ]
 
-# Plot frequency distribution
+# Order by frequency
 dt.rPas.activity.pc <- dt.rPas.activity.pc[order(freq_per_year_pc), ]
 
 ##### Defining underlining map of Rotterdam #####
@@ -166,3 +166,42 @@ map.activity.pc.2018 <- map.activity.pc.2018 +
 map.activity.pc.2018
 
 ggsave(paste0(dir.results, "map.activity.pc.2018.pdf"))
+
+
+#### Create map for 2017 and 2018 combined####
+dt.rPas.activity.pc.all <- dt.rPas.activity.pc[, freq := sum(freq_per_year_pc), by = c("location.lat", "location.lng")]
+
+dt.rPas.activity.pc.all <- dt.rPas.activity.pc.all[, c("location.lat", "location.lng", "freq")]
+dt.rPas.activity.pc.all <- dt.rPas.activity.pc.all[!duplicated(dt.rPas.activity.pc.all), ]
+
+# Order by frequency
+dt.rPas.activity.pc.all <- dt.rPas.activity.pc.all[order(freq), ]
+
+
+map.activity.pc.all <- ggmap(map.rotterdam.02)
+map.activity.pc.all
+
+# Add the activity information from the RotterdamPas dataset
+map.activity.pc.all <- map.activity.pc.all + 
+  geom_point(aes(x = location.lng, 
+                 y = location.lat, 
+                 colour = cut(freq,
+                              c(0, 25, 100, 500, 5000, 30000, 75000, Inf),
+                              labels = c("<= 25", "26 - 100", "101 - 500",
+                                         "501 - 5,000", "5,001 - 30,000",
+                                         "30,001 - 75,000", "> 75,000"))),
+             data = dt.rPas.activity.pc.all, 
+             size = 1.5, 
+  ) + 
+  scale_colour_brewer(palette = "YlOrRd") + 
+  xlab(label = "Longitude") + 
+  ylab(label = "Latitude") +
+  labs(title = "Activities Used by RotterdamPas Owners", 
+       subtitle = "2017 and 2018", 
+       colour = "Number of Users") + 
+  theme(plot.title = element_text(hjust = 0.5, color = "#666666"),
+        plot.subtitle = element_text(hjust = 0.5, color = "#666666"))
+
+map.activity.pc.all
+
+ggsave(paste0(dir.results, "map.activity.pc.all.pdf"))
