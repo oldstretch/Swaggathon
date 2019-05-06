@@ -75,6 +75,16 @@ dt.rPas.activity.day <- dt.rPas.activity.day[!is.na(dt.rPas.activity.day$day_of_
 dt.rPas.activity.day <- dt.rPas.activity.day[!is.na(dt.rPas.activity.day$location.lat), ]
 dt.rPas.activity.day <- dt.rPas.activity.day[!is.na(dt.rPas.activity.day$location.lng), ]
 
+# Summarize by Postcode/ geocode
+dt.rPas.activity.day.pc <- dt.rPas.activity.day[, freq_per_day_pc := sum(freq_per_day), by = c("day_of_week", "location.lat", "location.lng")]
+
+# Deleting duplicates
+dt.rPas.activity.day.pc <- dt.rPas.activity.day.pc[, c("day_of_week", "location.lat", "location.lng", "freq_per_day_pc")]
+dt.rPas.activity.day.pc <- dt.rPas.activity.day.pc[!duplicated(dt.rPas.activity.day.pc), ]
+
+# Plot frequency distribution
+dt.rPas.activity.day.pc <- dt.rPas.activity.day.pc[order(freq_per_day_pc), ]
+barplot(dt.rPas.activity.day.pc$freq_per_day_pc)
 
 ##### Defining underlining map of Rotterdam #####
 
@@ -103,60 +113,61 @@ dt.rPas.activity.day <- dt.rPas.activity.day[!is.na(dt.rPas.activity.day$locatio
 load(paste0(dir.results, "map.rotterdam.02.Rda"))
 
 # Show the map
-map.activity.days <- ggmap(map.rotterdam.02)
-map.activity.days
+map.activity.days.pc <- ggmap(map.rotterdam.02)
+map.activity.days.pc
 
 # Add the activity information from the RotterdamPas dataset
-map.activity.days <- map.activity.days + 
+map.activity.days.pc <- map.activity.days.pc + 
   geom_point(aes(x = location.lng, 
                  y = location.lat, 
-                 colour = cut(freq_per_day,
-                              c(0, 10, 50, 100, 500, 2000, 10000, Inf),
-                              labels = c("<= 10", "11 - 50", "51 - 100",
-                                         "101 - 500", "501 - 2,000",
-                                         "2,001 - 10,000", "> 10,000"))),
-             data = dt.rPas.activity.day, 
-             size = 2, 
-             alpha = 0.50
+                 colour = cut(freq_per_day_pc,
+                              c(0, 10, 100, 500, 2000, 5000, 15000, Inf),
+                              labels = c("<= 10", "11 - 100", "101 - 500",
+                                         "501 - 2,000", "2,001 - 5,000",
+                                         "5,001 - 15,000", "> 15,000"))),
+             data = dt.rPas.activity.day.pc, 
+             size = 1.5, 
              ) + 
   scale_colour_brewer(palette = "YlOrRd") + 
     xlab(label = "Longitude") +
     ylab(label = "Latitude") +
     labs(colour = "Number of Users")
 
-map.activity.days
+map.activity.days.pc
 
-map.activity.days.animated <- map.activity.days + 
-  transition_states(dt.rPas.activity.day$day_of_week, 
+map.activity.days.pc.animated <- map.activity.days.pc + 
+  transition_states(dt.rPas.activity.day.pc$day_of_week, 
                     transition_length = 1, 
                     state_length = 25) + 
   labs(title = "Activities Used by RotterdamPas Owners per Day", 
        subtitle = "{closest_state}")
   
-gganimate::animate(map.activity.days.animated, renderer = av_renderer())
+gganimate::animate(map.activity.days.pc.animated, renderer = av_renderer())
 
-anim_save(paste0(dir.results, "map.activity.days.animated.mp4"))
+anim_save(paste0(dir.results, "map.activity.days.pc.animated.mp4"))
 
 
 ##### Static map that shows activities on Wednesdays #####
 
 # Limit dataset to activities that take place on Wednesdays 
 
-dt.rPas.activity.day.wednesday <- dt.rPas.activity.day[day_of_week == "Wednesday"]
+dt.rPas.activity.day.pc.wednesday <- dt.rPas.activity.day.pc[day_of_week == "Wednesday"]
 
 
 # Create graph that only consist of activities on Wednesdays
-map.activity.days.wednesday <- map.activity.days + 
+map.activity.days.pc.wednesday <- ggmap(map.rotterdam.02)
+map.activity.days.pc.wednesday
+
+map.activity.days.pc.wednesday <- map.activity.days.pc.wednesday + 
   geom_point(aes(x = location.lng, 
                  y = location.lat, 
-                 colour = cut(freq_per_day,
-                              c(0, 10, 50, 100, 500, 2000, 10000, Inf),
-                              labels = c("<= 10", "11 - 50", "51 - 100",
-                                         "101 - 500", "501 - 2,000",
-                                         "2,001 - 10,000", "> 10,000"))),
-             data = dt.rPas.activity.day.wednesday, 
-             size = 1.5, 
-             alpha = 0.50
+                 colour = cut(freq_per_day_pc,
+                              c(0, 10, 100, 500, 2000, 5000, 15000, Inf),
+                              labels = c("<= 10", "11 - 100", "101 - 500",
+                                         "501 - 2,000", "2,001 - 5,000",
+                                         "5,001 - 15,000", "> 15,000"))),
+             data = dt.rPas.activity.day.pc.wednesday, 
+             size = 1.5 
   ) + 
   scale_colour_brewer(palette = "YlOrRd") + 
   xlab(label = "Longitude") +
@@ -165,8 +176,8 @@ map.activity.days.wednesday <- map.activity.days +
        subtitle = "Wednesday", 
        colour = "Number of Users")
 
-map.activity.days.wednesday
-ggsave(paste0(dir.results, "map.activity.days.wednesday.pdf"))
+map.activity.days.pc.wednesday
+ggsave(paste0(dir.results, "map.activity.days.pc.wednesday.pdf"))
 
 
 
@@ -174,21 +185,23 @@ ggsave(paste0(dir.results, "map.activity.days.wednesday.pdf"))
 
 # Limit dataset to activities that take place on Sundays
 
-dt.rPas.activity.day.sunday <- dt.rPas.activity.day[day_of_week == "Sunday"]
+dt.rPas.activity.day.pc.sunday <- dt.rPas.activity.day.pc[day_of_week == "Sunday"]
 
 
 # Create graph that only consist of activities on Sundays
-map.activity.days.sunday <- map.activity.days + 
+map.activity.days.pc.sunday <- ggmap(map.rotterdam.02)
+map.activity.days.pc.sunday
+
+map.activity.days.pc.sunday <- map.activity.days.pc.sunday + 
   geom_point(aes(x = location.lng, 
                  y = location.lat, 
-                 colour = cut(freq_per_day,
-                              c(0, 10, 50, 100, 500, 2000, 10000, Inf),
-                              labels = c("<= 10", "11 - 50", "51 - 100",
-                                         "101 - 500", "501 - 2,000",
-                                         "2,001 - 10,000", "> 10,000"))),
-             data = dt.rPas.activity.day.sunday, 
-             size = 1.5, 
-             alpha = 0.50
+                 colour = cut(freq_per_day_pc,
+                              c(0, 10, 100, 500, 2000, 5000, 15000, Inf),
+                              labels = c("<= 10", "11 - 100", "101 - 500",
+                                         "501 - 2,000", "2,001 - 5,000",
+                                         "5,001 - 15,000", "> 15,000"))),
+             data = dt.rPas.activity.day.pc.sunday, 
+             size = 1.5 
   ) + 
   scale_colour_brewer(palette = "YlOrRd") + 
   xlab(label = "Longitude") +
@@ -197,6 +210,6 @@ map.activity.days.sunday <- map.activity.days +
        subtitle = "Sunday", 
        colour = "Number of Users")
 
-map.activity.days.sunday
-ggsave(paste0(dir.results, "map.activity.days.sunday.pdf"))
+map.activity.days.pc.sunday
+ggsave(paste0(dir.results, "map.activity.days.pc.sunday.pdf"))
 
