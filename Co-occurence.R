@@ -6,7 +6,7 @@ library(plyr)
 library(reshape2)
 library(ggplot2)
 
-
+View(ds.rpas.cooc)
 # Analyze the distribution of activities based on type
 activity.shares <- ddply(ds.rpas.cooc,
                          .(activity_type),
@@ -31,7 +31,22 @@ ggplot(activity.shares.ordered, aes(x = n, y = nOccurances)) +
   geom_line(y = one.percent.barrier) +
   labs(title = "Number of Observations per activity type", y = "Activity type")
 
-# ggsave("/Users/ulifretzen/Swaggathon/results/Number_of_Observations.png")
+activity.shares..above.barrier <- activity.shares.ordered[
+  activity.shares.ordered$nOccurances > one.percent.barrier, ]
+
+activity.shares.ordered.above.barrier$percentage <- 
+  activity.shares.ordered.above.barrier$nOccurances / sum(activity.shares.ordered$nOccurances)
+
+
+ggplot(ds.rpas.cooc, aes(activity_type)) +
+  geom_bar()
++
+  geom_line() +
+  geom_line(y = one.percent.barrier) +
+  labs(title = "Number of Observations per activity type", y = "Activity type")
+
+
+ggsave("/Users/ulifretzen/Swaggathon/results/Number_of_Observations.png")
 
 # Conclusions: Some activities are way more common than others
 
