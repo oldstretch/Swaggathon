@@ -149,6 +149,7 @@ dt.pas.and.locs <- merge(dt.pas.and.locs,
                          all.x = TRUE)
 
 
-
+# save script as pdf
+knitr::stitch('Distance_Measures.R')
 
 

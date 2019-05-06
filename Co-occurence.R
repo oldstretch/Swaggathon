@@ -21,7 +21,6 @@ activity.shares.ordered$n <- c(30:1)
 
 # Conclusion: Film, Museum and Active activities are the most common activities
 
-str(activity.shares.ordered)
 
 # Calculate 1% of activities
 one.percent.barrier <- sum(activity.shares.ordered$nOccurances) * 0.01
@@ -32,7 +31,7 @@ ggplot(activity.shares.ordered, aes(x = n, y = nOccurances)) +
   geom_line(y = one.percent.barrier) +
   labs(title = "Number of Observations per activity type", y = "Activity type")
 
-ggsave("/Users/ulifretzen/Swaggathon/results/Number_of_Observations.png")
+# ggsave("/Users/ulifretzen/Swaggathon/results/Number_of_Observations.png")
 
 # Conclusions: Some activities are way more common than others
 
@@ -44,7 +43,7 @@ activities.pp <- ddply(ds.rpas.cooc,
 
 activities.pp.ordered <- activities.pp[order(activities.pp$nActivities), ]
 
-tail(activities.pp.ordered)
+# tail(activities.pp.ordered)
 
 ggplot(activities.pp.ordered, aes(x = nActivities, y = nOccurances)) +
   geom_point() +
@@ -69,7 +68,7 @@ ggplot(passholders.per.nActivity.ordered.40.act, aes(x = nActivities, y = nPassH
   geom_point() +
   geom_line() +
   labs(title = "Number of people per number of activities")
-ggsave("/Users/ulifretzen/Swaggathon/results/Number_of_passholders_with_number_of_activities.png")
+# ggsave("/Users/ulifretzen/Swaggathon/results/Number_of_passholders_with_number_of_activities.png")
 
 # Co-occurance analysis for activity type
 df.rpas.wide <- dcast(ds.rpas.cooc, passH_nb ~ activity_type,
@@ -80,7 +79,7 @@ df.rpas.wide <- df.rpas.wide[, -1]
 
 df.rpas.wide <- as.data.frame(ifelse(df.rpas.wide >= 1, 1, 0))
 
-head(df.rpas.wide)
+# head(df.rpas.wide)
 
 # Find Co-occurence parameters
 table(ds.rpas.cooc$activity_type, ds.rpas.cooc$activity_type)
@@ -139,3 +138,5 @@ inspect(myRules)
 summary(myRules)
 inspect(head(myRules, by ="lift", 10))
 
+# save script as pdf
+knitr::stitch('Co-occurence.R')

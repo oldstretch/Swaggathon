@@ -17,4 +17,7 @@ ggplot(dt.time.distribution, aes(x = age_category, y = time)) +
   theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank())
-ggsave("boxplot-time.png")
+# ggsave("boxplot-time.png")
+
+# save script as pdf
+knitr::stitch('boxplot-time.R')

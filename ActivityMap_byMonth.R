@@ -68,6 +68,7 @@ dt.rPas.activity.month$month_of_year <- factor(dt.rPas.activity.month$month_of_y
                                                           "Oktober", "November", "Dezember"))
 
 
+
 ##### Defining underlining map of Rotterdam #####
 
 # Determine how large the map should be (bounding box) given the geocoordinates to plot
@@ -79,7 +80,7 @@ maxLon <- max(dt.rPas.activity.month$location.lng, na.rm = TRUE)
 rangeLat <- maxLat - minLat
 rangeLon <- maxLon - minLon
 
-mrg  <- 0.10   # Apply 15% margin in all directions
+mrg  <- 0.10   # Apply 10% margin in all directions
 bbox <- c(minLon - mrg*rangeLon, minLat - mrg*rangeLat, 
           maxLon + mrg*rangeLon, maxLat + mrg*rangeLat)
 
@@ -96,7 +97,7 @@ map.activity.months <- ggmap(map.rotterdam.03)
 map.activity.months
 
 # Add the activity information from the RotterdamPas dataset for 2017
-map.activity.days.animated <- map.activity.months + 
+map.activity.months <- map.activity.months + 
   geom_point(aes(x = location.lng, 
                  y = location.lat,
                  colour = cut(freq_per_month, 
@@ -105,22 +106,24 @@ map.activity.days.animated <- map.activity.months +
                                          "101 - 250", "251 - 1,000", 
                                          "1,001 - 5,000", "> 5,001"))), 
              data = dt.rPas.activity.month, 
-             size = 3,
-             alpha = 0.20
+             size = 2,
+             alpha = 0.50
   ) + 
   scale_colour_brewer(palette = "YlOrRd") +
   xlab(label = "Longitude") + 
   ylab(label = "Latitude") + 
   labs(colour = "Number of Users")
 
-map.activity.days.animated
+map.activity.months
 
-map.activity.days.animated + 
+map.activity.months.animated <- map.activity.months + 
   transition_states(dt.rPas.activity.month$month_of_year, 
-                    transition_length = 10, 
+                    transition_length = 1, 
                     state_length = 25) + 
   labs(title = "Activities Used by RotterdamPas Owners per Month", 
        subtitle = "{closest_state}")
 
-# Save animated map
+
+gganimate::animate(map.activity.months.animated, renderer = av_renderer())
+
 anim_save(paste0(dir.results, "map.activity.months.animated.mp4"))
