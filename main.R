@@ -1,7 +1,7 @@
 # install and import the necessary packages
 
-# install.packages("knitr", dependencies = TRUE)
-library(knitr)
+# # install.packages("knitr", dependencies = TRUE)
+# library(knitr)
 
 
 # set working directory 
@@ -22,7 +22,3 @@ dir.results <- paste0(dir, "results/")
 # set global seed
 set.seed(1234)
 
-
-
-# save script as pdf
-knitr::stitch('main.R')

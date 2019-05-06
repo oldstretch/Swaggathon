@@ -1,179 +1,0 @@
-\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
-%% maxwidth is the original width if it is less than linewidth
-%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
-\makeatletter
-\def\maxwidth{ %
-  \ifdim\Gin@nat@width>\linewidth
-    \linewidth
-  \else
-    \Gin@nat@width
-  \fi
-}
-\makeatother
-
-\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
-\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
-\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
-\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
-\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
-\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
-\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
-\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
-\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
-\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
-\let\hlipl\hlkwb
-
-\usepackage{framed}
-\makeatletter
-\newenvironment{kframe}{%
- \def\at@end@of@kframe{}%
- \ifinner\ifhmode%
-  \def\at@end@of@kframe{\end{minipage}}%
-  \begin{minipage}{\columnwidth}%
- \fi\fi%
- \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
- \colorbox{shadecolor}{##1}\hskip-\fboxsep
-     % There is no \\@totalrightmargin, so:
-     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
- \MakeFramed {\advance\hsize-\width
-   \@totalleftmargin\z@ \linewidth\hsize
-   \@setminipage}}%
- {\par\unskip\endMakeFramed%
- \at@end@of@kframe}
-\makeatother
-
-\definecolor{shadecolor}{rgb}{.97, .97, .97}
-\definecolor{messagecolor}{rgb}{0, 0, 0}
-\definecolor{warningcolor}{rgb}{1, 0, 1}
-\definecolor{errorcolor}{rgb}{1, 0, 0}
-\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
-
-\usepackage{alltt}
-\usepackage[sc]{mathpazo}
-\renewcommand{\sfdefault}{lmss}
-\renewcommand{\ttdefault}{lmtt}
-\usepackage[T1]{fontenc}
-\usepackage{geometry}
-\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
-\setcounter{secnumdepth}{2}
-\setcounter{tocdepth}{2}
-\usepackage[unicode=true,pdfusetitle,
- bookmarks=true,bookmarksnumbered=true,bookmarksopen=true,bookmarksopenlevel=2,
- breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
- {hyperref}
-\hypersetup{
- pdfstartview={XYZ null null 1}}
-
-\makeatletter
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
-\renewcommand{\textfraction}{0.05}
-\renewcommand{\topfraction}{0.8}
-\renewcommand{\bottomfraction}{0.8}
-\renewcommand{\floatpagefraction}{0.75}
-
-\makeatother
-\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-\begin{document}
-
-
-
-\title{\title{\title{\title{}}}}
-
-
-
-\maketitle
-The results below are generated from an R script.
-
-##### install and load necessary libraries ###### install.packages("data.table", dependencies = TRUE)library(data.table)# install.packages("ggmap", dependencies = TRUE)library(ggmap)#install.packages("dplyr", dependencies = TRUE)library(dplyr)#install.packages("plyr", dependencies = TRUE)library(plyr)# install.packages("RColorBrewer", dependencies = TRUE)library(RColorBrewer)# install.packages("doBy", dependencies = TRUE)library(doBy)# install.packages("gganimate", dependencies = TRUE)library(gganimate)##### Import and prepare data ###### load rotterdam pas datads.rPas.activity.day <- readRDS(paste0(dir.providedData, 
-                                   "dt.rotterdamPas.RData"))dt.rPas.activity.day <- as.data.table(ds.rPas.activity.day)dt.rPas.activity.day <- dt.rPas.activity.day[, day_of_week := weekdays(dt.rPas.activity.day$use_date)]# Summarize the number of users per day per activitydt.rPas.activity.day <- dt.rPas.activity.day[, freq_per_day := .N, by = c("activity_nb", "day_of_week")]# Sort dataset by postcodedt.rPas.activity.day <- dt.rPas.activity.day[order(dt.rPas.activity.day$partner_postcode), ]df.rPas.activity.day <- as.data.frame(dt.rPas.activity.day)# load and prepare geo tag datasetds.zipcodes.geoloc <- read.csv(paste0(dir.providedData, 
-                                      "Postalcodes_with_GeoLoc.csv"))dt.zipcodes.geoloc <- as.data.table(ds.zipcodes.geoloc)colnames(dt.zipcodes.geoloc)[2] <- "partner_postcode"#merge the two datasetsdf.rPas.activity.day <- merge(df.rPas.activity.day, 
-                               dt.zipcodes.geoloc, 
-                               by = "partner_postcode", 
-                               all.x = TRUE)# Deleting duplicatesdf.rPas.activity.day <- df.rPas.activity.day[!duplicated(df.rPas.activity.day[c("activity_nb", 
-                                                                                "day_of_week")]), ]# Selectiung relevant columns for further analysis / mapdf.rPas.activity.day <- df.rPas.activity.day[, c(2, 13, 30, 31, 34, 35)]dt.rPas.activity.day <- as.data.table(df.rPas.activity.day)dt.rPas.activity.day$day_of_week <- factor(dt.rPas.activity.day$day_of_week, 
-                                           levels = c("Montag", "Dienstag", "Mittwoch", "Donnerstag", 
-                                                      "Freitag", "Samstag", "Sonntag"), 
-                                           labels = c("Monday", "Tuesday", "Wednesday", "Thursday", 
-                                                      "Friday", "Saturday", "Sunday"))dt.rPas.activity.day <- dt.rPas.activity.day[!is.na(dt.rPas.activity.day$day_of_week), ]dt.rPas.activity.day <- dt.rPas.activity.day[!is.na(dt.rPas.activity.day$location.lat), ]dt.rPas.activity.day <- dt.rPas.activity.day[!is.na(dt.rPas.activity.day$location.lng), ]View(dt.rPas.activity.day)##### Defining underlining map of Rotterdam ###### Determine how large the map should be (bounding box) given the geocoordinates to plotminLat <- min(dt.rPas.activity.day$location.lat, na.rm = TRUE)maxLat <- max(dt.rPas.activity.day$location.lat, na.rm = TRUE)minLon <- min(dt.rPas.activity.day$location.lng, na.rm = TRUE)maxLon <- max(dt.rPas.activity.day$location.lng, na.rm = TRUE)rangeLat <- maxLat - minLatrangeLon <- maxLon - minLonmrg  <- 0.10   # Apply 15% margin in all directionsbbox <- c(minLon - mrg*rangeLon, minLat - mrg*rangeLat, 
-          maxLon + mrg*rangeLon, maxLat + mrg*rangeLat)# Get the mapmap.rotterdam.02 <- get_stamenmap(bbox, 
-                                  zoom = 12, 
-                                  maptype = "terrain")## Source : http://tile.stamen.com/terrain/12/2098/1352.png
-## Source : http://tile.stamen.com/terrain/12/2099/1352.png
-## Source : http://tile.stamen.com/terrain/12/2100/1352.png
-## Source : http://tile.stamen.com/terrain/12/2098/1353.png
-## Source : http://tile.stamen.com/terrain/12/2099/1353.png
-## Source : http://tile.stamen.com/terrain/12/2100/1353.png
-## Source : http://tile.stamen.com/terrain/12/2098/1354.png
-## Source : http://tile.stamen.com/terrain/12/2099/1354.png
-## Source : http://tile.stamen.com/terrain/12/2100/1354.png
-## Source : http://tile.stamen.com/terrain/12/2098/1355.png
-## Source : http://tile.stamen.com/terrain/12/2099/1355.png
-## Source : http://tile.stamen.com/terrain/12/2100/1355.png
-# Store the mapsave(map.rotterdam.02, file = paste0(dir.results, "map.rotterdam.02.Rda"))# Show the mapmap.activity.days <- ggmap(map.rotterdam.02)map.activity.daysfigure/ActivityMap-byDay-Rnwauto-report-1.pdf# Add the activity information from the RotterdamPas datasetmap.activity.days.animated <- map.activity.days + 
-  geom_point(aes(x = location.lng, 
-                 y = location.lat, 
-                 colour = cut(freq_per_day,
-                              c(0, 10, 50, 100, 500, 2000, 10000, Inf),
-                              labels = c("<= 10", "11 - 50", "51 - 100",
-                                         "101 - 500", "501 - 2,000",
-                                         "2,001 - 10,000", "> 10,000"))),
-             data = dt.rPas.activity.day, 
-             size = 3, 
-             alpha = 0.20
-             ) + 
-  scale_colour_brewer(palette = "YlOrRd") + 
-    xlab(label = "Longitude") +
-    ylab(label = "Latitude") +
-    labs(colour = "Number of Users")map.activity.days.animatedfigure/ActivityMap-byDay-Rnwauto-report-2.pdfmap.activity.days.animated + 
-  transition_states(dt.rPas.activity.day$day_of_week, 
-                    transition_length = 15, 
-                    state_length = 20) + 
-  labs(title = "Activities Used by RotterdamPas Owners per Month", 
-       subtitle = "{closest_state}")## 
-## Rendering [>----------------------------------------------------] at 0.73 fps ~ eta:  2mRendering [>----------------------------------------------------] at 0.45 fps ~ eta:  4mRendering [=>----------------------------------------------------] at 0.4 fps ~ eta:  4mRendering [=>---------------------------------------------------] at 0.36 fps ~ eta:  4mRendering [==>--------------------------------------------------] at 0.36 fps ~ eta:  4mRendering [==>--------------------------------------------------] at 0.35 fps ~ eta:  5mRendering [===>-------------------------------------------------] at 0.34 fps ~ eta:  5mRendering [===>-------------------------------------------------] at 0.33 fps ~ eta:  5mRendering [====>------------------------------------------------] at 0.32 fps ~ eta:  5mRendering [====>------------------------------------------------] at 0.33 fps ~ eta:  5mRendering [=====>-----------------------------------------------] at 0.33 fps ~ eta:  5mRendering [=====>-----------------------------------------------] at 0.33 fps ~ eta:  4mRendering [======>----------------------------------------------] at 0.33 fps ~ eta:  4mRendering [======>----------------------------------------------] at 0.32 fps ~ eta:  4mRendering [=======>---------------------------------------------] at 0.33 fps ~ eta:  4mRendering [========>--------------------------------------------] at 0.33 fps ~ eta:  4mRendering [=========>-------------------------------------------] at 0.33 fps ~ eta:  4mRendering [=========>-------------------------------------------] at 0.31 fps ~ eta:  4mRendering [==========>------------------------------------------] at 0.31 fps ~ eta:  4mRendering [==========>-------------------------------------------] at 0.3 fps ~ eta:  4mRendering [===========>------------------------------------------] at 0.3 fps ~ eta:  4mRendering [============>----------------------------------------] at 0.29 fps ~ eta:  4mRendering [=============>---------------------------------------] at 0.29 fps ~ eta:  4mRendering [==============>---------------------------------------] at 0.3 fps ~ eta:  4mRendering [===============>--------------------------------------] at 0.3 fps ~ eta:  4mRendering [================>-------------------------------------] at 0.3 fps ~ eta:  4mRendering [================>------------------------------------] at 0.29 fps ~ eta:  4mRendering [=================>------------------------------------] at 0.3 fps ~ eta:  4mRendering [==================>-----------------------------------] at 0.3 fps ~ eta:  4mRendering [===================>----------------------------------] at 0.3 fps ~ eta:  4mRendering [====================>---------------------------------] at 0.3 fps ~ eta:  3mRendering [=====================>--------------------------------] at 0.3 fps ~ eta:  3mRendering [======================>-------------------------------] at 0.3 fps ~ eta:  3mRendering [=======================>------------------------------] at 0.3 fps ~ eta:  3mRendering [========================>-----------------------------] at 0.3 fps ~ eta:  3mRendering [========================>----------------------------] at 0.29 fps ~ eta:  3mRendering [=========================>---------------------------] at 0.29 fps ~ eta:  3mRendering [==========================>--------------------------] at 0.28 fps ~ eta:  3mRendering [===========================>-------------------------] at 0.28 fps ~ eta:  3mRendering [============================>------------------------] at 0.28 fps ~ eta:  3mRendering [=============================>-----------------------] at 0.28 fps ~ eta:  3mRendering [==============================>----------------------] at 0.28 fps ~ eta:  2mRendering [===============================>---------------------] at 0.28 fps ~ eta:  2mRendering [================================>--------------------] at 0.28 fps ~ eta:  2mRendering [================================>--------------------] at 0.29 fps ~ eta:  2mRendering [=================================>-------------------] at 0.29 fps ~ eta:  2mRendering [==================================>------------------] at 0.29 fps ~ eta:  2mRendering [===================================>-----------------] at 0.29 fps ~ eta:  2mRendering [====================================>----------------] at 0.29 fps ~ eta:  2mRendering [=====================================>---------------] at 0.29 fps ~ eta:  2mRendering [======================================>--------------] at 0.29 fps ~ eta:  2mRendering [======================================>--------------] at 0.28 fps ~ eta:  2mRendering [=======================================>-------------] at 0.28 fps ~ eta:  1mRendering [========================================>------------] at 0.28 fps ~ eta:  1mRendering [========================================>------------] at 0.29 fps ~ eta:  1mRendering [=========================================>-----------] at 0.29 fps ~ eta:  1mRendering [==========================================>----------] at 0.29 fps ~ eta:  1mRendering [===========================================>---------] at 0.29 fps ~ eta:  1mRendering [============================================>--------] at 0.29 fps ~ eta:  1mRendering [=============================================>-------] at 0.29 fps ~ eta: 49sRendering [=============================================>-------] at 0.29 fps ~ eta: 45sRendering [==============================================>------] at 0.29 fps ~ eta: 42sRendering [==============================================>------] at 0.29 fps ~ eta: 38sRendering [===============================================>-----] at 0.29 fps ~ eta: 35sRendering [===============================================>-----] at 0.29 fps ~ eta: 31sRendering [================================================>----] at 0.29 fps ~ eta: 28sRendering [================================================>----] at 0.29 fps ~ eta: 24sRendering [=================================================>---] at 0.29 fps ~ eta: 21sRendering [=================================================>---] at 0.29 fps ~ eta: 17sRendering [==================================================>--] at 0.29 fps ~ eta: 14sRendering [==================================================>--] at 0.29 fps ~ eta: 10sRendering [===================================================>-] at 0.29 fps ~ eta:  7sRendering [===================================================>-] at 0.29 fps ~ eta:  3sRendering [=====================================================] at 0.29 fps ~ eta:  0s                                                                                        
-# anim_save(paste0(dir.results, "map.activity.days.animated.mp4"))# save script as pdfknitr::stitch('ActivityMap_byDay.R')## 
-## 
-## processing file: ActivityMap_byDay.Rnw
-## Error in parse_block(g[-1], g[1], params.src): duplicate label 'setup'
-figure/ActivityMap-byDay-Rnwauto-report-3.pdf
-
-The R session information (including the OS info, R version and all
-packages used):
-
-sessionInfo()## R version 3.5.3 (2019-03-11)
-## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: macOS Mojave 10.14.4
-## 
-## Matrix products: default
-## BLAS: /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib
-## LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
-## 
-## locale:
-## [1] de_DE.UTF-8/de_DE.UTF-8/de_DE.UTF-8/C/de_DE.UTF-8/de_DE.UTF-8
-## 
-## attached base packages:
-## [1] stats     graphics  grDevices utils     datasets  methods   base     
-## 
-## other attached packages:
-##  [1] gganimate_1.0.3    doBy_4.6-2         RColorBrewer_1.1-2 plyr_1.8.4        
-##  [5] dplyr_0.8.0.1      ggmap_3.0.0        ggplot2_3.1.1      stringr_1.4.0     
-##  [9] data.table_1.12.2  lubridate_1.7.4    readr_1.3.1        knitr_1.22        
-## 
-## loaded via a namespace (and not attached):
-##  [1] Rcpp_1.0.1        pillar_1.3.1      compiler_3.5.3    highr_0.8        
-##  [5] prettyunits_1.0.2 progress_1.2.0    bitops_1.0-6      tools_3.5.3      
-##  [9] digest_0.6.18     evaluate_0.13     tibble_2.1.1      gtable_0.3.0     
-## [13] lattice_0.20-38   pkgconfig_2.0.2   png_0.1-7         rlang_0.3.4      
-## [17] Matrix_1.2-15     rstudioapi_0.10   curl_3.3          xfun_0.6         
-## [21] withr_2.1.2       httr_1.4.0        hms_0.4.2         RgoogleMaps_1.4.3
-## [25] grid_3.5.3        tidyselect_0.2.5  glue_1.3.1        R6_2.4.0         
-## [29] jpeg_0.1-8        gifski_0.8.6      farver_1.1.0      tweenr_1.0.1     
-## [33] purrr_0.3.2       tidyr_0.8.3       magrittr_1.5      MASS_7.3-51.1    
-## [37] scales_1.0.0      assertthat_0.2.1  colorspace_1.4-1  labeling_0.3     
-## [41] tinytex_0.12      stringi_1.4.3     lazyeval_0.2.2    munsell_0.5.0    
-## [45] crayon_1.3.4      rjson_0.2.20
-Sys.time()## [1] "2019-05-02 10:45:52 CEST"
-
-
-
-\end{document}

@@ -22,8 +22,8 @@ library(doBy)
 library(gganimate)
 
 
-# save script as pdf
-knitr::stitch('ActivityMap_byDay.R')
+# # save script as pdf
+# knitr::stitch('ActivityMap_byDay.R')
 
 
 ##### Import and prepare data #####
@@ -75,7 +75,6 @@ dt.rPas.activity.day <- dt.rPas.activity.day[!is.na(dt.rPas.activity.day$day_of_
 dt.rPas.activity.day <- dt.rPas.activity.day[!is.na(dt.rPas.activity.day$location.lat), ]
 dt.rPas.activity.day <- dt.rPas.activity.day[!is.na(dt.rPas.activity.day$location.lng), ]
 
-View(dt.rPas.activity.day)
 
 ##### Defining underlining map of Rotterdam #####
 
@@ -88,7 +87,7 @@ maxLon <- max(dt.rPas.activity.day$location.lng, na.rm = TRUE)
 rangeLat <- maxLat - minLat
 rangeLon <- maxLon - minLon
 
-mrg  <- 0.10   # Apply 15% margin in all directions
+mrg  <- 0.10   # Apply 10% margin in all directions
 bbox <- c(minLon - mrg*rangeLon, minLat - mrg*rangeLat, 
           maxLon + mrg*rangeLon, maxLat + mrg*rangeLat)
 
@@ -105,7 +104,7 @@ map.activity.days <- ggmap(map.rotterdam.02)
 map.activity.days
 
 # Add the activity information from the RotterdamPas dataset
-map.activity.days.animated <- map.activity.days + 
+map.activity.days <- map.activity.days + 
   geom_point(aes(x = location.lng, 
                  y = location.lat, 
                  colour = cut(freq_per_day,
@@ -114,23 +113,24 @@ map.activity.days.animated <- map.activity.days +
                                          "101 - 500", "501 - 2,000",
                                          "2,001 - 10,000", "> 10,000"))),
              data = dt.rPas.activity.day, 
-             size = 3, 
-             alpha = 0.20
+             size = 2, 
+             alpha = 0.50
              ) + 
   scale_colour_brewer(palette = "YlOrRd") + 
     xlab(label = "Longitude") +
     ylab(label = "Latitude") +
     labs(colour = "Number of Users")
 
-map.activity.days.animated
+map.activity.days
 
-map.activity.days.animated + 
+map.activity.days.animated <- map.activity.days + 
   transition_states(dt.rPas.activity.day$day_of_week, 
-                    transition_length = 15, 
-                    state_length = 20) + 
-  labs(title = "Activities Used by RotterdamPas Owners per Month", 
+                    transition_length = 1, 
+                    state_length = 25) + 
+  labs(title = "Activities Used by RotterdamPas Owners per Day", 
        subtitle = "{closest_state}")
   
+gganimate::animate(map.activity.days.animated, renderer = av_renderer())
 
-# anim_save(paste0(dir.results, "map.activity.days.animated.mp4"))
+anim_save(paste0(dir.results, "map.activity.days.animated.mp4"))
 
