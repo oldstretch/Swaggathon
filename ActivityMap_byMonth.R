@@ -70,6 +70,16 @@ dt.rPas.activity.month$month_of_year <- factor(dt.rPas.activity.month$month_of_y
                                                           "June", "Juli", "August", "September", 
                                                           "October", "November", "December"))
 
+# Summarize by Postcode/ geocode
+dt.rPas.activity.month.pc <- dt.rPas.activity.month[, freq_per_month_pc := sum(freq_per_month), by = c("month_of_year", "location.lat", "location.lng")]
+
+# Deleting duplicates
+dt.rPas.activity.month.pc <- dt.rPas.activity.month.pc[, c("month_of_year", "location.lat", "location.lng", "freq_per_month_pc")]
+dt.rPas.activity.month.pc <- dt.rPas.activity.month.pc[!duplicated(dt.rPas.activity.month.pc), ]
+
+# Plot frequency distribution
+dt.rPas.activity.month.pc <- dt.rPas.activity.month.pc[order(freq_per_month_pc), ]
+View(dt.rPas.activity.month.pc)
 
 
 ##### Defining underlining map of Rotterdam #####
@@ -99,100 +109,106 @@ load(paste0(dir.results, "map.rotterdam.02.Rda"))
 
 
 # Show the map
-map.activity.months <- ggmap(map.rotterdam.02)
-map.activity.months
+map.activity.months.pc <- ggmap(map.rotterdam.02)
+map.activity.months.pc
 
 # Add the activity information from the RotterdamPas dataset for 2017
-map.activity.months <- map.activity.months + 
+map.activity.months.pc <- map.activity.months.pc + 
   geom_point(aes(x = location.lng, 
                  y = location.lat,
-                 colour = cut(freq_per_month, 
-                              c(0, 10, 50, 100, 250, 1000, 5000, Inf), 
-                              labels = c("<= 10", "11 - 50", "51 - 100", 
-                                         "101 - 250", "251 - 1,000", 
-                                         "1,001 - 5,000", "> 5,001"))), 
-             data = dt.rPas.activity.month, 
-             size = 1.5,
-             alpha = 0.50
+                 colour = cut(freq_per_month_pc,
+                              c(0, 10, 100, 500, 2000, 5000, 15000, Inf),
+                              labels = c("<= 10", "11 - 100", "101 - 500",
+                                         "501 - 2,000", "2,001 - 5,000",
+                                         "5,001 - 15,000", "> 15,000"))),
+             data = dt.rPas.activity.month.pc, 
+             size = 1.5
   ) + 
   scale_colour_brewer(palette = "YlOrRd") +
   xlab(label = "Longitude") + 
   ylab(label = "Latitude") + 
   labs(colour = "Number of Users")
+  
 
-map.activity.months
+map.activity.months.pc
 
-map.activity.months.animated <- map.activity.months + 
-  transition_states(dt.rPas.activity.month$month_of_year, 
+map.activity.months.pc.animated <- map.activity.months.pc + 
+  transition_states(dt.rPas.activity.month.pc$month_of_year, 
                     transition_length = 1, 
                     state_length = 25) + 
   labs(title = "Activities Used by RotterdamPas Owners per Month", 
        subtitle = "{closest_state}")
 
 
-gganimate::animate(map.activity.months.animated, renderer = av_renderer())
+gganimate::animate(map.activity.months.pc.animated, renderer = av_renderer())
 
-anim_save(paste0(dir.results, "map.activity.months.animated.mp4"))
+anim_save(paste0(dir.results, "map.activity.months.pc.animated.mp4"))
 
 
 ##### Static map that shows activities during Juli #####
 
 # Limit dataset to activities that take place during Juli
 
-dt.rPas.activity.month.juli <- dt.rPas.activity.month[month_of_year == "Juli", ]
+dt.rPas.activity.month.pc.juli <- dt.rPas.activity.month.pc[month_of_year == "Juli", ]
 
 
 # Create graph that only consist of activities on Juli
-map.activity.month.juli <- map.activity.months + 
+map.activity.months.pc.juli <- ggmap(map.rotterdam.02)
+map.activity.months.pc.juli
+
+map.activity.month.pc.juli <- map.activity.months.pc.juli + 
   geom_point(aes(x = location.lng, 
                  y = location.lat, 
-                 colour = cut(freq_per_month, 
-                              c(0, 10, 50, 100, 250, 1000, 5000, Inf), 
-                              labels = c("<= 10", "11 - 50", "51 - 100", 
-                                         "101 - 250", "251 - 1,000", 
-                                         "1,001 - 5,000", "> 5,001"))), 
-             data = dt.rPas.activity.month.wednesday, 
-             size = 1.5, 
-             alpha = 0.50
+                 colour = cut(freq_per_month_pc,
+                              c(0, 10, 100, 500, 2000, 5000, 15000, Inf),
+                              labels = c("<= 10", "11 - 100", "101 - 500",
+                                         "501 - 2,000", "2,001 - 5,000",
+                                         "5,001 - 15,000", "> 15,000"))),
+             data = dt.rPas.activity.month.pc.juli, 
+             size = 1.5
   ) + 
   scale_colour_brewer(palette = "YlOrRd") + 
   xlab(label = "Longitude") +
   ylab(label = "Latitude") +
   labs(title = "Activities Used by RotterdamPas Owners per Month", 
        subtitle = "Juli", 
-       colour = "Number of Users")
+       colour = "Number of Users") + 
+  theme(plot.title = element_text(hjust = 0.5, color = "#666666"),
+        plot.subtitle = element_text(hjust = 0.5, color = "#666666"))
 
-map.activity.month.juli
-ggsave(paste0(dir.results, "map.activity.month.juli.pdf"))
+map.activity.month.pc.juli
+ggsave(paste0(dir.results, "map.activity.month.pc.juli.pdf"))
 
 
 
 ##### Static map that shows activities during December #####
 
 # Limit dataset to activities that take place during December
+dt.rPas.activity.month.pc.december <- dt.rPas.activity.month.pc[month_of_year == "December", ]
 
-dt.rPas.activity.month.december <- dt.rPas.activity.month[month_of_year == "December", ]
+# Create graph that only consist of activities on Juli
+map.activity.month.pc.december <- ggmap(map.rotterdam.02)
+map.activity.month.pc.december
 
-
-# Create graph that only consist of activities on December
-map.activity.month.december <- map.activity.months + 
+map.activity.month.pc.december <- map.activity.month.pc.december + 
   geom_point(aes(x = location.lng, 
                  y = location.lat, 
-                 colour = cut(freq_per_month, 
-                              c(0, 10, 50, 100, 250, 1000, 5000, Inf), 
-                              labels = c("<= 10", "11 - 50", "51 - 100", 
-                                         "101 - 250", "251 - 1,000", 
-                                         "1,001 - 5,000", "> 5,001"))), 
-             data = dt.rPas.activity.month.december, 
-             size = 1.5, 
-             alpha = 0.50
+                 colour = cut(freq_per_month_pc,
+                              c(0, 10, 100, 500, 2000, 5000, 15000, Inf),
+                              labels = c("<= 10", "11 - 100", "101 - 500",
+                                         "501 - 2,000", "2,001 - 5,000",
+                                         "5,001 - 15,000", "> 15,000"))),
+             data = dt.rPas.activity.month.pc.december, 
+             size = 1.5
   ) + 
   scale_colour_brewer(palette = "YlOrRd") + 
   xlab(label = "Longitude") +
   ylab(label = "Latitude") +
   labs(title = "Activities Used by RotterdamPas Owners per Month", 
        subtitle = "December", 
-       colour = "Number of Users")
+       colour = "Number of Users") + 
+  theme(plot.title = element_text(hjust = 0.5, color = "#666666"),
+        plot.subtitle = element_text(hjust = 0.5, color = "#666666"))
 
-map.activity.month.december
-ggsave(paste0(dir.results, "map.activity.month.december.pdf"))
+map.activity.month.pc.december
+ggsave(paste0(dir.results, "map.activity.month.pc.december.pdf"))
