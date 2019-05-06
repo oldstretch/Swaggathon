@@ -60,7 +60,7 @@ ds.events <- read.csv(paste0(dir.providedData, "ds.urban.events.csv"))
 
 
 ##### Clean / Understand Rotterdampas dataset #####
-
+dir.providedData <- "/Users/ulifretzen/Swaggathon/providedData/"
 load(paste0(dir.providedData, "rotterdampas.RData"))
 # load(paste0("/Users/ulifretzen/Swaggathon/providedData/rotterdampas.RData"))
 ds.rotterdamPas <- Rotterdampas_2017_2018
@@ -82,9 +82,43 @@ dt.rotterdamPas <- dt.rotterdamPas[activity_within_rotterdam == 1, ]
 
 dt.rotterdamPas$partner_postcode <- dt.rotterdamPas[, gsub(" ", "", dt.rotterdamPas$partner_postcode)]
 
+
+# Translate Dutch Activity types into English
+unique(dt.rotterdamPas$activity_type)
+
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Natuurparken"] <- "Nature Park"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Overig"] <- "Others"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Film"] <- "Film"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Watersport"] <- "Water Sports"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Cafe (koffie & gebak)"] <- "Café (coffee & pastry)"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Iconen"] <- "Icons"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Musea"] <- "Museum"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Dieren(parken)"] <- "Zoo"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Sightseeing"] <- "Sightseeing"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Restaurant (lunch & diner)"] <- "Restaurant (lunch & diner)"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Actief"] <- "Active"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Contributie"] <- "Contribution"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "(Pret)parken"] <- "Amusement Park"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Creatief"] <- "Creative"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Zwemsport"] <- "Swimming"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Taal, lezen & leren"] <- "Language, reading & learning"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Wintersport"] <- "Winter sports"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Schoonheid van binnen"] <- "Beauty on the inside"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Krachtsport"] <- "Weight lifting"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Schoonheid van buiten"] <- "Beauty on the outside"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Rondleiding"] <- "Guided tours"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Muziek & dans"] <- "Music & Dance"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "IJsje"] <- "Ice cream"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Alles"] <- "Everything"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Theater, muziek en dans"] <- "Theatre, music and dance"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Culinair"] <- "Culinary"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Relaxen"] <- "Relaxing"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Vechtsport"] <- "Martial arts"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Theater"] <- "Theatre"
+dt.rotterdamPas$activity_type[dt.rotterdamPas$activity_type == "Gouda"] <- "Gouda"
+
 # save dataset
 saveRDS(dt.rotterdamPas, file = paste0(dir.providedData, "dt.rotterdamPas.RData"))
-
 
 
 # Compensation is what the government pays which the people don't, in order to provide the discount

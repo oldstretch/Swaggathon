@@ -1,6 +1,6 @@
 # File for co-ocurence analysis
 
-ds.rpas.cooc <- readRDS(paste0("/Users/ulifretzen/Swaggathon/providedData/ds.rotterdamPas.RData"))
+ds.rpas.cooc <- readRDS(paste0("/Users/ulifretzen/Swaggathon/providedData/dt.rotterdamPas.RData"))
 
 library(plyr)
 library(reshape2)
