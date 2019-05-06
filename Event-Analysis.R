@@ -62,7 +62,8 @@ ggplot(ds.testyear, aes(x = year, y = mean_nr)) + geom_line()
 ggplot(ds.testyear, aes(x = year, y = count_event)) +geom_line()
 ggplot(ds.test, aes(x = size)) + geom_histogram() + facet_wrap(~year) +scale_x_log10()
 
-
+# save script as pdf
+knitr::stitch('Event-Analysis.R')
 
 
 

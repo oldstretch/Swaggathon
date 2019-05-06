@@ -1,0 +1,160 @@
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage[sc]{mathpazo}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=true,bookmarksopen=true,bookmarksopenlevel=2,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
+ {hyperref}
+\hypersetup{
+ pdfstartview={XYZ null null 1}}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\topfraction}{0.8}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\floatpagefraction}{0.75}
+
+\makeatother
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+
+
+\title{\title{\title{\title{\title{\title{}}}}}}
+
+
+
+\maketitle
+The results below are generated from an R script.
+
+# Analysis of events in Rotterdamlibrary(plyr)library(ggplot2)library(data.table)df.events <- read.csv(paste0("/Users/ulifretzen/Swaggathon/providedData/ds.urban.events.csv"))## Warning in file(file, "rt"): kann Datei '/Users/ulifretzen/Swaggathon/providedData/ds.urban.events.csv' nicht öffnen: No such file or directory
+## Error in file(file, "rt"): kann Verbindung nicht öffnen
+View(df.events)## Error in View : Objekt 'df.events' nicht gefunden
+sum(complete.cases(df.events))## Error in complete.cases(df.events): Objekt 'df.events' nicht gefunden
+# Visitors per yearvis.per.year <- ddply(df.events, .(year), summarise, nr_visitors = sum(nr_visitors, na.rm = T))## Error in empty(.data): Objekt 'df.events' nicht gefunden
+ggplot(vis.per.year, aes(x= year, y = nr_visitors)) +
+  geom_line() +
+  geom_smooth()## Error in ggplot(vis.per.year, aes(x = year, y = nr_visitors)): Objekt 'vis.per.year' nicht gefunden
+# Number new events per yeardf.events.new <- df.events[!is.na(df.events$initial_year & df.events$year),
+                           c("initial_year", "year")]## Error in eval(expr, envir, enclos): Objekt 'df.events' nicht gefunden
+df.events.new$new <- df.events.new$initial_year == df.events.new$year## Error in eval(expr, envir, enclos): Objekt 'df.events.new' nicht gefunden
+df.events.new.by.year <- ddply(df.events.new, .(year), summarise, n_new_events = sum(new))## Error in empty(.data): Objekt 'df.events.new' nicht gefunden
+ggplot(df.events.new.by.year, aes(x= year, y = n_new_events)) +
+  geom_line() +
+  geom_smooth()## Error in ggplot(df.events.new.by.year, aes(x = year, y = n_new_events)): Objekt 'df.events.new.by.year' nicht gefunden
+# # Number of visitors involved in size of events# df.event.seasonality <- df.events[!is.na(df.events$start_date & df.events$nr_visitors), #                                   c("start_date", "year", "nr_visitors")]# # df.event.seasonality$month <- substr(df.event.seasonality$start_date, 6, 7)# # dt.event.seasonality <- data.table(df.event.seasonality)# # dt.test <- dt.event.seasonality[, visitors := sum(nr_visitors), by = c("year", "month")]# # head(dt.test)# dt.event.seasonality <- ddply(df.event.seasonality,#                               c("year", "month"),#                               summarise,#                               nr_visitors = sum("nr_visitors"))# Get number of people per size of eventdf.events.people.per.event.size <- df.events[, 12:13]## Error in eval(expr, envir, enclos): Objekt 'df.events' nicht gefunden
+df.events.people.per.event.size.complete <- df.events.people.per.event.size[complete.cases(
+  df.events.people.per.event.size), ]## Error in eval(expr, envir, enclos): Objekt 'df.events.people.per.event.size' nicht gefunden
+setDT(df.events.people.per.event.size.complete)## Error: Cannot find symbol df.events.people.per.event.size.complete
+ds.testyear <- df.events.people.per.event.size.complete## Error in eval(expr, envir, enclos): Objekt 'df.events.people.per.event.size.complete' nicht gefunden
+ds.testyear[, mean_nr := mean(nr_visitors), by = "year"]## Error in eval(expr, envir, enclos): Objekt 'ds.testyear' nicht gefunden
+ds.testyear[, count_event := .N, by = "year"]## Error in eval(expr, envir, enclos): Objekt 'ds.testyear' nicht gefunden
+ds.testyear <- ds.testyear[, c(2:4)]## Error in eval(expr, envir, enclos): Objekt 'ds.testyear' nicht gefunden
+ggplot(ds.testyear, aes(x = year, y = mean_nr)) + geom_line()## Error in ggplot(ds.testyear, aes(x = year, y = mean_nr)): Objekt 'ds.testyear' nicht gefunden
+ggplot(ds.testyear, aes(x = year, y = count_event)) +geom_line()## Error in ggplot(ds.testyear, aes(x = year, y = count_event)): Objekt 'ds.testyear' nicht gefunden
+ggplot(ds.test, aes(x = size)) + geom_histogram() + facet_wrap(~year) +scale_x_log10()## Error in ggplot(ds.test, aes(x = size)): Objekt 'ds.test' nicht gefunden
+# save script as pdfknitr::stitch('Event-Analysis.R')## 
+## 
+## processing file: Event-Analysis.Rnw
+## Error in parse_block(g[-1], g[1], params.src): duplicate label 'setup'
+
+
+The R session information (including the OS info, R version and all
+packages used):
+
+sessionInfo()## R version 3.5.3 (2019-03-11)
+## Platform: x86_64-apple-darwin15.6.0 (64-bit)
+## Running under: macOS Mojave 10.14.4
+## 
+## Matrix products: default
+## BLAS: /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
+## 
+## locale:
+## [1] de_DE.UTF-8/de_DE.UTF-8/de_DE.UTF-8/C/de_DE.UTF-8/de_DE.UTF-8
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] anim.plots_0.2     gganimate_1.0.3    doBy_4.6-2         RColorBrewer_1.1-2
+##  [5] plyr_1.8.4         dplyr_0.8.0.1      ggmap_3.0.0        ggplot2_3.1.1     
+##  [9] stringr_1.4.0      data.table_1.12.2  lubridate_1.7.4    readr_1.3.1       
+## [13] knitr_1.22        
+## 
+## loaded via a namespace (and not attached):
+##  [1] progress_1.2.0    tinytex_0.12      tidyselect_0.2.5  xfun_0.6         
+##  [5] purrr_0.3.2       lattice_0.20-38   colorspace_1.4-1  rlang_0.3.4      
+##  [9] pillar_1.3.1      glue_1.3.1        withr_2.1.2       tweenr_1.0.1     
+## [13] av_0.2            jpeg_0.1-8        munsell_0.5.0     gtable_0.3.0     
+## [17] RgoogleMaps_1.4.3 evaluate_0.13     labeling_0.3      curl_3.3         
+## [21] gifski_0.8.6      highr_0.8         Rcpp_1.0.1        scales_1.0.0     
+## [25] magick_2.0        farver_1.1.0      rjson_0.2.20      hms_0.4.2        
+## [29] png_0.1-7         digest_0.6.18     stringi_1.4.3     animation_2.6    
+## [33] grid_3.5.3        tools_3.5.3       bitops_1.0-6      magrittr_1.5     
+## [37] lazyeval_0.2.2    tibble_2.1.1      crayon_1.3.4      tidyr_0.8.3      
+## [41] pkgconfig_2.0.2   MASS_7.3-51.1     Matrix_1.2-15     prettyunits_1.0.2
+## [45] assertthat_0.2.1  httr_1.4.0        rstudioapi_0.10   R6_2.4.0         
+## [49] compiler_3.5.3
+Sys.time()## [1] "2019-05-06 15:42:21 CEST"
+
+
+
+\end{document}
