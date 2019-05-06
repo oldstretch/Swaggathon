@@ -78,8 +78,6 @@ dt.rPas.activity.pc <- dt.rPas.activity.pc[!duplicated(dt.rPas.activity.pc), ]
 # Plot frequency distribution
 dt.rPas.activity.pc <- dt.rPas.activity.pc[order(freq_per_year_pc), ]
 
-View(dt.rPas.activity.pc)
-
 ##### Defining underlining map of Rotterdam #####
 
 # # Determine how large the map should be (bounding box) given the geocoordinates to plot 
