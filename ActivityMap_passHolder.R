@@ -60,7 +60,9 @@ PieChart.passHolder
 ggsave(paste0(dir.results, "PieChart.passHolder.pdf"))
 
 
-#### Prepare Data for Mapping of Pass Holders within Rotterdam ####
+
+
+#### Prepare Data for Mapping of Pass Holders within Rotterdam (Heatmap) ####
 
 
 dt.rPas.passHolder.RTown <- dt.rPas.passHolder[passHolder_within_rotterdam == 1, ]
@@ -68,11 +70,9 @@ dt.rPas.passHolder.RTown <- dt.rPas.passHolder[passHolder_within_rotterdam == 1,
 # Summarize the number of pass holders per postcode
 dt.rPas.passHolder.RTown <- dt.rPas.passHolder.RTown[, 
                                                      freq_per_pc := .N, 
-                                                     by = c("passH_postcode", 
-                                                            "age_category")]
+                                                     by = passH_postcode]
 
 dt.rPas.passHolder.RTown <- dt.rPas.passHolder.RTown[, c("passH_postcode", 
-                                                         "age_category", 
                                                          "freq_per_pc")]
 
 # Deleting duplicates
@@ -92,7 +92,6 @@ dt.rPas.passHolder.RTown <- merge(dt.rPas.passHolder.RTown,
 
 
 dt.rPas.passHolder.RTown <- dt.rPas.passHolder.RTown[, c("freq_per_pc", 
-                                                         "age_category",
                                                          "location.lat", 
                                                          "location.lng")]
 
@@ -105,3 +104,131 @@ dt.rPas.passHolder.RTown <- dt.rPas.passHolder.RTown[order(freq_per_pc), ]
 
 View(dt.rPas.passHolder.RTown)
 
+
+
+#### Create map with Pass Holders within Rotterdam ####
+
+# Load saved map of Rotterdam 
+load(paste0(dir.results, "map.rotterdam.02.Rda"))
+
+map.passHolder.RTown <- ggmap(map.rotterdam.02)
+map.passHolder.RTown
+
+# Add the activity information from the RotterdamPas dataset
+map.passHolder.RTown <- map.passHolder.RTown + 
+  geom_point(aes(x = location.lng, 
+                 y = location.lat, 
+                 colour = cut(freq_per_pc,
+                              c(0, 5, 10, 25, 50, 100, 200, Inf),
+                              labels = c("<= 5","6 - 10", "11 - 25", "26 - 50",
+                                         "51 - 100", "101 - 200", 
+                                         "> 200"))
+  ),
+  data = dt.rPas.passHolder.RTown, 
+  size = 1.5, 
+  ) + 
+  scale_colour_brewer(palette = "YlOrRd") + 
+  xlab(label = "Longitude") + 
+  ylab(label = "Latitude") +
+  labs(title = "Pass Holders Within Rotterdam", 
+       colour = "# per Postcode") +  
+  theme(plot.title = element_text(hjust = 0.5, color = "#666666"),
+        plot.subtitle = element_text(hjust = 0.5, color = "#666666"))
+
+map.passHolder.RTown
+
+ggsave(paste0(dir.results, "map.passHolder.RTown.pdf"))
+
+
+
+#### Prepare Data for Mapping of most common Postcode - Age category combinations ####
+
+dt.rPas.passHolder.RTown.age <- dt.rPas.passHolder[passHolder_within_rotterdam == 1, ]
+
+# Summarize the number of pass holders per postcode
+dt.rPas.passHolder.RTown.age <- dt.rPas.passHolder.RTown.age[, 
+                                                             freq_per_pc := .N, 
+                                                             by = c("passH_postcode", 
+                                                                    "age_category")]
+
+dt.rPas.passHolder.RTown.age  <- dt.rPas.passHolder.RTown.age [, 
+                                                               c("passH_postcode", 
+                                                                 "age_category", 
+                                                                 "freq_per_pc")]
+
+# Deleting duplicates
+dt.rPas.passHolder.RTown.age <- dt.rPas.passHolder.RTown.age[!duplicated(dt.rPas.passHolder.RTown.age), ]
+
+# Order by frequency
+dt.rPas.passHolder.RTown.age <- dt.rPas.passHolder.RTown.age[order(-freq_per_pc), ]
+
+dt.rPas.passHolder.RTown.age <- dt.rPas.passHolder.RTown.age[1:200, ]
+
+
+# load and prepare geo tag dataset
+ds.zipcodes.geoloc <- read.csv(paste0(dir.providedData, 
+                                      "Postalcodes_with_GeoLoc.csv"))
+dt.zipcodes.geoloc <- as.data.table(ds.zipcodes.geoloc)
+colnames(dt.zipcodes.geoloc)[2] <- "passH_postcode"
+
+#merge the two datasets
+dt.rPas.passHolder.RTown.age <- merge(dt.rPas.passHolder.RTown.age, 
+                                      dt.zipcodes.geoloc, 
+                                      by = "passH_postcode", 
+                                      all.x = TRUE)
+
+
+dt.rPas.passHolder.RTown.age <- dt.rPas.passHolder.RTown.age[, 
+                                                             c("freq_per_pc", 
+                                                               "age_category",
+                                                               "location.lat", 
+                                                               "location.lng")]
+
+# Deleting NA geocodes
+dt.rPas.passHolder.RTown.age <- 
+  dt.rPas.passHolder.RTown.age[!is.na(dt.rPas.passHolder.RTown.age$location.lat), ]
+
+dt.rPas.passHolder.RTown.age <- 
+  dt.rPas.passHolder.RTown.age[!is.na(dt.rPas.passHolder.RTown.age$location.lng), ]
+
+# Order by frequency
+dt.rPas.passHolder.RTown.age <- dt.rPas.passHolder.RTown.age[order(freq_per_pc), ]
+
+View(dt.rPas.passHolder.RTown.age)
+
+
+#### Create map with Pass Holders within Rotterdam ####
+
+# Load saved map of Rotterdam 
+load(paste0(dir.results, "map.rotterdam.02.Rda"))
+
+map.passHolder.RTown.age <- ggmap(map.rotterdam.02)
+map.passHolder.RTown.age
+
+# Add the activity information from the RotterdamPas dataset
+map.passHolder.RTown.age <- map.passHolder.RTown.age + 
+  geom_point(aes(x = location.lng, 
+                 y = location.lat, 
+                 colour = cut(freq_per_pc,
+                              c(0, 40, 50, 70, 90, 200, Inf),
+                              labels = c("<= 40","41 - 50", "51 - 70", 
+                                         "71 - 90", "91 - 120", "> 121")), 
+                 shape = age_category
+  ),
+  data = dt.rPas.passHolder.RTown.age, 
+  size = 1.5, 
+  ) + 
+  scale_colour_brewer(palette = "YlOrRd") + 
+  scale_shape_manual(values = c(1:6)) +
+  xlab(label = "Longitude") + 
+  ylab(label = "Latitude") +
+  labs(title = "Most common Postcode / Age-Category Combinations", 
+       subtitle = "of Pass Holders Within Rotterdam", 
+       colour = "# per Postcode", 
+       shape = "Age Category") + 
+  theme(plot.title = element_text(hjust = 0.5, color = "#666666"),
+        plot.subtitle = element_text(hjust = 0.5, color = "#666666"))
+
+map.passHolder.RTown.age
+
+ggsave(paste0(dir.results, "map.passHolder.RTown.age.pdf"))
